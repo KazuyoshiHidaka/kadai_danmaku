@@ -28,14 +28,14 @@ Partial Class Form1
         Fireball_Group = New Panel()
         Panel_Game = New Panel()
         Panel_Info = New Panel()
+        Label_Score_Plus = New Label()
+        Label_Score = New Label()
         Label1 = New Label()
         Label_Stage_Level = New Label()
         Panel_Player_HP = New FlowLayoutPanel()
         Img_Player_HP = New PictureBox()
         PictureBox1 = New PictureBox()
         PictureBox2 = New PictureBox()
-        Label_Score = New Label()
-        Label_Score_Plus = New Label()
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Game.SuspendLayout()
         Panel_Info.SuspendLayout()
@@ -90,6 +90,26 @@ Partial Class Form1
         Panel_Info.Name = "Panel_Info"
         Panel_Info.Size = New Size(800, 150)
         Panel_Info.TabIndex = 1
+        ' 
+        ' Label_Score_Plus
+        ' 
+        Label_Score_Plus.AutoSize = True
+        Label_Score_Plus.Location = New Point(149, 17)
+        Label_Score_Plus.Name = "Label_Score_Plus"
+        Label_Score_Plus.Size = New Size(54, 25)
+        Label_Score_Plus.TabIndex = 4
+        Label_Score_Plus.Text = "+500"
+        ' 
+        ' Label_Score
+        ' 
+        Label_Score.AutoSize = True
+        Label_Score.Font = New Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point)
+        Label_Score.Location = New Point(149, 34)
+        Label_Score.Name = "Label_Score"
+        Label_Score.RightToLeft = RightToLeft.Yes
+        Label_Score.Size = New Size(62, 38)
+        Label_Score.TabIndex = 3
+        Label_Score.Text = "000"
         ' 
         ' Label1
         ' 
@@ -152,26 +172,6 @@ Partial Class Form1
         PictureBox2.SizeMode = PictureBoxSizeMode.StretchImage
         PictureBox2.TabIndex = 2
         PictureBox2.TabStop = False
-        ' 
-        ' Label_Score
-        ' 
-        Label_Score.AutoSize = True
-        Label_Score.Font = New Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point)
-        Label_Score.Location = New Point(149, 34)
-        Label_Score.Name = "Label_Score"
-        Label_Score.RightToLeft = RightToLeft.Yes
-        Label_Score.Size = New Size(62, 38)
-        Label_Score.TabIndex = 3
-        Label_Score.Text = "000"
-        ' 
-        ' Label_Score_Plus
-        ' 
-        Label_Score_Plus.AutoSize = True
-        Label_Score_Plus.Location = New Point(149, 17)
-        Label_Score_Plus.Name = "Label_Score_Plus"
-        Label_Score_Plus.Size = New Size(54, 25)
-        Label_Score_Plus.TabIndex = 4
-        Label_Score_Plus.Text = "+500"
         ' 
         ' Form1
         ' 

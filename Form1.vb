@@ -127,24 +127,31 @@ Public Class Form1
         Label_Stage_Level.Text = stage.level + 1
 
         If stage.ftime Mod score_up_fspan = 0 Then
-            'スコアを加算する
+            'スコアを加算するタイミング
+
+            '基本得点
+            Dim base As Integer = 500
 
             '上の位置にいるほどスコアが高くなるようにする
             Dim position_score As Integer = Panel_Game.Height - Player.Height - Player.Top
-
-            Dim position_bonus As Integer = Math.Max(
-                1,
-Math.Min(
-                    3,
-                    Math.Floor(
-                        (Panel_Game.Height - Player.Top) / Panel_Game.Height * 3
-                    )
-                )
-            )
-            Dim score_plus = 500 * (stage.level + 1) * position_bonus
-            score += 500
+            Dim position_bonus As Integer = 1
+            Dim score_plus = base * (stage.level + 1) * position_bonus
+            score += score_plus
             Label_Score.Text = score
-            Label_Score_Plus.Text = "+500"
+            Label_Score_Plus.Text = "+" & score_plus
+
+            'プラスに応じて、スコアプラスの色を変える
+            If score_plus >= base * 8 Then
+                Label_Score_Plus.ForeColor = Color.DarkRed
+            ElseIf score_plus >= base * 5 Then
+                Label_Score_Plus.ForeColor = Color.DarkOrange
+            ElseIf score_plus >= base * 3 Then
+                Label_Score_Plus.ForeColor = Color.DarkGoldenrod
+            ElseIf score_plus >= base * 2 Then
+                Label_Score_Plus.ForeColor = Color.DarkGreen
+            Else
+                Label_Score_Plus.ForeColor = Color.Black
+            End If
 
         ElseIf stage.ftime Mod score_up_fspan / 2 = 0 Then
             'スコアプラスを消す
@@ -308,48 +315,43 @@ Math.Min(
         game_stopped = False
     End Sub
 
-    Private Sub Label_Stage_Time_Left_Click(sender As Object, e As EventArgs) Handles Label_Stage_Level.Click
-
-    End Sub
 End Class
 
 
 Public Class Stage1
     '難易度調整のために、親ゲームクラスのプロパティの書き換えに使う
     Dim Game As Form1
-    'ステージ番号
-    Public index As Integer = 0
-    '開始からの経過フレーム時間
+    'ステージ開始からの経過フレーム時間
     Public ftime As Integer = 0
     'ステージの難易度
     Public level As Integer = 0
     '次のレベルにあがるまでのフレーム時間
-    Public level_up_fspan As Integer = 1000
+    Public level_up_fspan As Integer = 2000
 
     '難易度調整用の変数
     'レベル 1 ～ 10 まである
     '
     ''Fireballを生成するフレーム間隔. この値が小さいほど、多く生成される
     Dim Fireball_gen_fspan As Integer() = {
-        25, 23, 22, 20, 18, 16, 15, 13, 12, 10
+        30, 23, 22, 20, 18, 16, 15, 14, 13, 15
     }
 
     'Fireballを生成する範囲. この値が小さいほど、プレイヤーの近くに生成される
     Dim Fireball_gen_range As Integer() = {
-        500, 400, 350, 300, 250, 200, 170, 150, 120, 100
+        500, 400, 350, 300, 250, 200, 170, 150, 150, 150
     }
     'Fireballの速度. この値が大きいほど、速くなる
     Dim Fireball_speed As Integer() = {
-        3, 4, 4, 5, 6, 7, 8, 9, 10, 11
+        3, 4, 4, 5, 6, 7, 8, 9, 10, 9
     }
 
     Sub New(ByRef _Game As Form1)
         Game = _Game
-        Init_Difficulty_Params()
+        Init_Level()
     End Sub
 
     '難易度を初期化する
-    Private Sub Init_Difficulty_Params()
+    Private Sub Init_Level()
         Game.fireball_generatable = True
         Game.fireball_atk = 1
         'レベルは 0 からスタート
