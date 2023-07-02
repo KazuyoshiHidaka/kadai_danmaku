@@ -51,6 +51,10 @@ Public Class Form1
     '現在のステージ
     Dim stage As Stage1
 
+    'スコア
+    Dim score As Integer = 0
+    'スコアが加算される間隔. 経過時間に応じてスコアが増えていく
+    Dim score_up_fspan As Integer = 20
 
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
@@ -117,23 +121,34 @@ Public Class Form1
             End If
         End If
 
-        'ステージの残り時間による処理
-        stage.tick_count += 1
-        If stage.Ftime_left() <= 0 Then
-            'ステージクリア
-            Label_Stage_Time_Left.Text = "0"
-            fireball_generatable = False
-            fireball_atk = 0
-            'Update_Player_HP(3)
+        'ステージの経過時間による処理
+        stage.ftime += 1
+        stage.Level_Up_By_Ftime()
+        Label_Stage_Level.Text = stage.level + 1
 
-            game_clear = True
-            Game_Over()
-        Else
-            'ステージの残り時間を表示
-            Label_Stage_Time_Left.Text = Math.Ceiling(
-                stage.Ftime_left() / 0.7 / 100 '約70フレームで1秒
+        If stage.ftime Mod score_up_fspan = 0 Then
+            'スコアを加算する
+
+            '上の位置にいるほどスコアが高くなるようにする
+            Dim position_score As Integer = Panel_Game.Height - Player.Height - Player.Top
+
+            Dim position_bonus As Integer = Math.Max(
+                1,
+Math.Min(
+                    3,
+                    Math.Floor(
+                        (Panel_Game.Height - Player.Top) / Panel_Game.Height * 3
+                    )
+                )
             )
-            stage.Difficulty_Up_By_Ftime_left()
+            Dim score_plus = 500 * (stage.level + 1) * position_bonus
+            score += 500
+            Label_Score.Text = score
+            Label_Score_Plus.Text = "+500"
+
+        ElseIf stage.ftime Mod score_up_fspan / 2 = 0 Then
+            'スコアプラスを消す
+            Label_Score_Plus.Text = ""
         End If
     End Sub
 
@@ -281,7 +296,7 @@ Public Class Form1
 
 
         'ゲームオブジェクト初期化
-        stage = New Stage1(Me, 0)
+        stage = New Stage1(Me)
 
         Game_Start()
     End Sub
@@ -293,7 +308,7 @@ Public Class Form1
         game_stopped = False
     End Sub
 
-    Private Sub Label_Stage_Time_Left_Click(sender As Object, e As EventArgs) Handles Label_Stage_Time_Left.Click
+    Private Sub Label_Stage_Time_Left_Click(sender As Object, e As EventArgs) Handles Label_Stage_Level.Click
 
     End Sub
 End Class
@@ -304,58 +319,32 @@ Public Class Stage1
     Dim Game As Form1
     'ステージ番号
     Public index As Integer = 0
-    'ステージの継続フレーム時間
-    Public fspan As Integer = 4200
-    'このカウントが fspan と等しくなったとき、ステージクリア
-    Public tick_count As Integer = 0
+    '開始からの経過フレーム時間
+    Public ftime As Integer = 0
     'ステージの難易度
-    Public stage_difficulty As Integer
+    Public level As Integer = 0
+    '次のレベルにあがるまでのフレーム時間
+    Public level_up_fspan As Integer = 1000
 
-    '難易度調整用の変数 ここから
-    'ステージの難易度が４段階ある。
-    '各難易度ごとに、残り時間に応じてさらに４段階ある。
-    '
-
-    '          残り時間に応じた難易度→
-    '               0  1  2  3
-    ' ステージ  0  低
-    '    ↓     1
-    '           2
-    '           3　　　　　  高
-    '
+    '難易度調整用の変数
+    'レベル 1 ～ 10 まである
     '
     ''Fireballを生成するフレーム間隔. この値が小さいほど、多く生成される
-    Dim Fireball_gen_fspan As Integer(,) = {
-        {25, 24, 23, 22},
-        {23, 22, 21, 20},
-        {20, 17, 16, 15},
-        {15, 13, 11, 10}
+    Dim Fireball_gen_fspan As Integer() = {
+        25, 23, 22, 20, 18, 16, 15, 13, 12, 10
     }
+
     'Fireballを生成する範囲. この値が小さいほど、プレイヤーの近くに生成される
-    Dim Fireball_gen_range As Integer(,) = {
-        {500, 450, 400, 350},
-        {400, 350, 300, 250},
-        {300, 250, 200, 170},
-        {170, 150, 120, 100}
+    Dim Fireball_gen_range As Integer() = {
+        500, 400, 350, 300, 250, 200, 170, 150, 120, 100
     }
     'Fireballの速度. この値が大きいほど、速くなる
-    Dim Fireball_speed As Integer(,) = {
-        {3, 3, 4, 5},
-        {4, 5, 6, 7},
-        {6, 7, 8, 9},
-        {8, 9, 10, 11}
+    Dim Fireball_speed As Integer() = {
+        3, 4, 4, 5, 6, 7, 8, 9, 10, 11
     }
 
-    '残りフレーム時間
-    ReadOnly Property Ftime_left As Integer
-        Get
-            Return fspan - tick_count
-        End Get
-    End Property
-
-    Sub New(ByRef _Game As Form1, stage_difficulty As Integer)
+    Sub New(ByRef _Game As Form1)
         Game = _Game
-        Me.stage_difficulty = stage_difficulty
         Init_Difficulty_Params()
     End Sub
 
@@ -363,27 +352,19 @@ Public Class Stage1
     Private Sub Init_Difficulty_Params()
         Game.fireball_generatable = True
         Game.fireball_atk = 1
-        '残り時間に応じた難易度は 0
-        Game.fireball_gen_fspan = Fireball_gen_fspan(stage_difficulty, 0)
-        Game.fireball_gen_range = Fireball_gen_range(stage_difficulty, 0)
-        Game.fireball_speed = Fireball_speed(stage_difficulty, 0)
+        'レベルは 0 からスタート
+        Game.fireball_gen_fspan = Fireball_gen_fspan(0)
+        Game.fireball_gen_range = Fireball_gen_range(0)
+        Game.fireball_speed = Fireball_speed(0)
     End Sub
 
-    'ステージの残り時間に応じて、難易度を上げる
-    Public Sub Difficulty_Up_By_Ftime_left()
-        '残り時間に応じた難易度をセット
-        Dim time_left_difficulty As Integer
-        If Ftime_left <= fspan * 0.2 Then
-            time_left_difficulty = 3
-        ElseIf Ftime_left <= fspan * 0.5 Then
-            time_left_difficulty = 2
-        ElseIf Ftime_left <= fspan * 0.75 Then
-            time_left_difficulty = 1
-        End If
+    Public Sub Level_Up_By_Ftime()
+        '経過時間に応じてレベルを上げていく. 最大 9
+        level = Math.Min(Math.Floor(ftime / level_up_fspan), 9)
 
         '難易度調整パラメータ更新
-        Game.fireball_gen_fspan = Fireball_gen_fspan(stage_difficulty, time_left_difficulty)
-        Game.fireball_gen_range = Fireball_gen_range(stage_difficulty, time_left_difficulty)
-        Game.fireball_speed = Fireball_speed(stage_difficulty, time_left_difficulty)
+        Game.fireball_gen_fspan = Fireball_gen_fspan(level)
+        Game.fireball_gen_range = Fireball_gen_range(level)
+        Game.fireball_speed = Fireball_speed(level)
     End Sub
 End Class

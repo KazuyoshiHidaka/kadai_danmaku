@@ -28,11 +28,14 @@ Partial Class Form1
         Fireball_Group = New Panel()
         Panel_Game = New Panel()
         Panel_Info = New Panel()
-        Label_Stage_Time_Left = New Label()
+        Label1 = New Label()
+        Label_Stage_Level = New Label()
         Panel_Player_HP = New FlowLayoutPanel()
         Img_Player_HP = New PictureBox()
         PictureBox1 = New PictureBox()
         PictureBox2 = New PictureBox()
+        Label_Score = New Label()
+        Label_Score_Plus = New Label()
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Game.SuspendLayout()
         Panel_Info.SuspendLayout()
@@ -78,20 +81,34 @@ Partial Class Form1
         ' 
         ' Panel_Info
         ' 
-        Panel_Info.Controls.Add(Label_Stage_Time_Left)
+        Panel_Info.Controls.Add(Label_Score_Plus)
+        Panel_Info.Controls.Add(Label_Score)
+        Panel_Info.Controls.Add(Label1)
+        Panel_Info.Controls.Add(Label_Stage_Level)
         Panel_Info.Controls.Add(Panel_Player_HP)
         Panel_Info.Location = New Point(0, 600)
         Panel_Info.Name = "Panel_Info"
         Panel_Info.Size = New Size(800, 150)
         Panel_Info.TabIndex = 1
         ' 
-        ' Label_Stage_Time_Left
+        ' Label1
         ' 
-        Label_Stage_Time_Left.Font = New Font("Yu Gothic UI", 18F, FontStyle.Regular, GraphicsUnit.Point)
-        Label_Stage_Time_Left.Location = New Point(661, 21)
-        Label_Stage_Time_Left.Name = "Label_Stage_Time_Left"
-        Label_Stage_Time_Left.Size = New Size(94, 51)
-        Label_Stage_Time_Left.TabIndex = 1
+        Label1.AutoSize = True
+        Label1.Font = New Font("Yu Gothic UI", 12F, FontStyle.Regular, GraphicsUnit.Point)
+        Label1.Location = New Point(590, 34)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(71, 32)
+        Label1.TabIndex = 2
+        Label1.Text = "レベル"
+        ' 
+        ' Label_Stage_Level
+        ' 
+        Label_Stage_Level.Font = New Font("Yu Gothic UI", 18F, FontStyle.Regular, GraphicsUnit.Point)
+        Label_Stage_Level.Location = New Point(661, 21)
+        Label_Stage_Level.Name = "Label_Stage_Level"
+        Label_Stage_Level.Size = New Size(94, 51)
+        Label_Stage_Level.TabIndex = 1
+        Label_Stage_Level.Text = "1"
         ' 
         ' Panel_Player_HP
         ' 
@@ -136,6 +153,26 @@ Partial Class Form1
         PictureBox2.TabIndex = 2
         PictureBox2.TabStop = False
         ' 
+        ' Label_Score
+        ' 
+        Label_Score.AutoSize = True
+        Label_Score.Font = New Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point)
+        Label_Score.Location = New Point(149, 34)
+        Label_Score.Name = "Label_Score"
+        Label_Score.RightToLeft = RightToLeft.Yes
+        Label_Score.Size = New Size(62, 38)
+        Label_Score.TabIndex = 3
+        Label_Score.Text = "000"
+        ' 
+        ' Label_Score_Plus
+        ' 
+        Label_Score_Plus.AutoSize = True
+        Label_Score_Plus.Location = New Point(149, 17)
+        Label_Score_Plus.Name = "Label_Score_Plus"
+        Label_Score_Plus.Size = New Size(54, 25)
+        Label_Score_Plus.TabIndex = 4
+        Label_Score_Plus.Text = "+500"
+        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(10F, 25F)
@@ -167,5 +204,8 @@ Partial Class Form1
     Friend WithEvents Img_Player_HP As PictureBox
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents PictureBox2 As PictureBox
-    Friend WithEvents Label_Stage_Time_Left As Label
+    Friend WithEvents Label_Stage_Level As Label
+    Friend WithEvents Label1 As Label
+    Friend WithEvents Label_Score As Label
+    Friend WithEvents Label_Score_Plus As Label
 End Class
