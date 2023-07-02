@@ -311,7 +311,7 @@ Public Class Stage1
     'ステージの難易度
     Public stage_difficulty As Integer
 
-    '難易度調整用の変数
+    '難易度調整用の変数 ここから
     'ステージの難易度が４段階ある。
     '各難易度ごとに、残り時間に応じてさらに４段階ある。
     '
