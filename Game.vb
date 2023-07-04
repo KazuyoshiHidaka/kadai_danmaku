@@ -4,6 +4,7 @@ Imports System.ComponentModel
 
 Public Class Game
 
+
     'ゲーム開始からの経過フレーム時間
     Dim ftime As Integer = 0
 
@@ -42,15 +43,6 @@ Public Class Game
     Dim game_clear As Boolean = False
 
     Dim random As New Random
-
-    Public Sub New()
-
-        ' この呼び出しはデザイナーで必要です。
-        InitializeComponent()
-
-        ' InitializeComponent() 呼び出しの後で初期化を追加します。
-
-    End Sub
 
     Private Sub Main_Timer_Tick(sender As Object, e As EventArgs) Handles Main_Timer.Tick
 
@@ -155,24 +147,30 @@ Panel_Game.Height - Player.Height '下端より下に行かないように
         Next
     End Sub
 
-    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
-        If e.KeyCode = Keys.Up Then
+    'KeyDownイベントでは方向キーを押したときに発生しないため、
+    '代わりにProcessCmdKeyを使う
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+        If keyData = Keys.Up Then
             key_up_pressed = True
-        ElseIf e.KeyCode = Keys.Right Then
+        ElseIf keyData = Keys.Right Then
             key_right_pressed = True
-        ElseIf e.KeyCode = Keys.Left Then
+        ElseIf keyData = Keys.Left Then
             key_left_pressed = True
-        ElseIf e.KeyCode = Keys.Down Then
+        ElseIf keyData = Keys.Down Then
             key_down_pressed = True
-        ElseIf game_inited And e.KeyCode = Keys.Escape Then
+        ElseIf game_inited And keyData = Keys.Escape Then
             'ゲーム 一時停止/再開
             If game_stopped Then
                 Game_Start()
             Else
                 Game_Stop()
             End If
+        Else
+            Return MyBase.ProcessCmdKey(msg, keyData)
         End If
-    End Sub
+
+        Return True
+    End Function
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles MyBase.KeyUp
         If e.KeyCode = Keys.Up Then
