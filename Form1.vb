@@ -1,4 +1,5 @@
-﻿Imports System.Threading
+﻿Imports System.Numerics
+Imports System.Threading
 
 Public Class Form1
 
@@ -12,34 +13,35 @@ Public Class Form1
     '鉄球: 斜めに動く. ステージの壁で反射する
 
 
-    Dim random As New Random
+    'ゲーム開始からの経過フレーム時間
+    Dim ftime As Integer = 0
+
+    '現在進行中のステージ
+    'Nullチェック必要!!
+    Dim stage As Stage
+
     Dim player_speed As Integer = 5
     Dim player_hp As Integer = 3
     'プレイヤーが無敵状態か
-    Dim player_invincible As Boolean = False
+    ReadOnly Property Player_Invincible() As Boolean
+        Get
+            Return player_invincible_to IsNot Nothing
+        End Get
+    End Property
     'プレイヤーがダメージを受けた直後の無敵フレーム時間
     Dim player_damaged_invincible_fspan As Integer = 100
     'このカウントが一定の値になったとき、プレイヤーの無敵状態を解除する
     Dim player_invincible_tick_count As Integer = 0
+    'プレイヤー無敵時間の終了時刻
+    'Nothingの場合、無敵ではない状態
+    Dim player_invincible_to As Integer?
+    'プレイヤー無敵時間の開始時刻
+    Dim player_invincible_from As Integer?
 
     Dim key_up_pressed As Boolean = False
     Dim key_right_pressed As Boolean = False
     Dim key_left_pressed As Boolean = False
     Dim key_down_pressed As Boolean = False
-
-    Dim FireBalls As New List(Of PictureBox)
-    'Fireballを生成するかどうか
-    Public fireball_generatable As Boolean = False
-    'Fireballを生成するフレーム間隔. fspanはフレーム単位のspan.
-    Public fireball_gen_fspan As Integer = 20
-    'このカウントが一定の値になったとき、Fireballを生成する
-    Dim fireball_gen_tick_count As Integer = 0
-    'Fireballの生成範囲. 範囲の中心はプレイヤー
-    Public fireball_gen_range As Integer = 300
-    Public fireball_speed As Integer = 6
-    Public fireball_atk As Integer = 1
-    'DEBUG用. Fireballに当たり判定があるかどうか
-    Dim fireball_collidable As Boolean = True
 
     'ゲームが開始したか
     Dim game_inited As Boolean = False
@@ -48,13 +50,12 @@ Public Class Form1
     'ゲームクリア!
     Dim game_clear As Boolean = False
 
-    '現在のステージ
-    Dim stage As Stage1
-
+    Dim random As New Random
 
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        'Player移動
+
+        '=== Player移動
         'キー同時押しに対応するために、別個にIf文を使う
         If key_up_pressed Then
             Player.Top = Math.Max(
@@ -81,60 +82,29 @@ Public Class Form1
             )
         End If
 
-        'FireBall移動
-        For Each fireball In Fireball_Group.Controls
-            fireball.Top += fireball_speed
 
-            '画面外に行ったボールを削除する
-            If fireball.Top > Panel_Game.Height Then
-                Fireball_Group.Controls.Remove(fireball)
-            End If
-
-            '衝突検出
-            If fireball_collidable And
-                Not player_invincible And
-                Player.Bounds.IntersectsWith(fireball.Bounds) Then
-
-                Player_Damaged(fireball_atk)
-            End If
-        Next
-
-        'Fireball生成
-        If fireball_generatable Then
-            fireball_gen_tick_count += 1
-            If fireball_gen_tick_count >= fireball_gen_fspan Then
-                fireball_gen_tick_count = 0
-                Generate_Fireball()
-            End If
+        If stage IsNot Nothing Then
+            '進行中のステージがある時:
+            '敵の追加, 移動, 削除
+            stage.Update_Enemies()
         End If
 
-        '無敵状態の終了処理
-        If player_invincible Then
-            player_invincible_tick_count += 1
-            If player_invincible_tick_count >= player_damaged_invincible_fspan Then
-                player_invincible_tick_count = 0
+        '衝突処理
+        For Each _enemy In Panel_Enemy.Controls
+            Dim enemy As Enemy = DirectCast(_enemy, Enemy)
+            enemy.On_Player_Collision()
+        Next
+
+
+        If player_invincible_to IsNot Nothing Then
+            'プレイヤー無敵中の場合
+            If player_invincible_to < ftime Then
+                '解除
                 Player_Invincible_Stop()
             End If
         End If
 
-        'ステージの残り時間による処理
-        stage.tick_count += 1
-        If stage.Ftime_left() <= 0 Then
-            'ステージクリア
-            Label_Stage_Time_Left.Text = "0"
-            fireball_generatable = False
-            fireball_atk = 0
-            'Update_Player_HP(3)
-
-            game_clear = True
-            Game_Over()
-        Else
-            'ステージの残り時間を表示
-            Label_Stage_Time_Left.Text = Math.Ceiling(
-                stage.Ftime_left() / 0.7 / 100 '約70フレームで1秒
-            )
-            stage.Difficulty_Up_By_Ftime_left()
-        End If
+        ftime += 1
     End Sub
 
 
@@ -156,32 +126,16 @@ Public Class Form1
     Private Sub Player_Invincible_Start(invincible_fspan As Integer)
         Debug.Assert(Not player_invincible, "無敵状態でない時に呼ぶ関数です。")
 
-        player_invincible = True
-
-        'Playerの残り体力で、無敵状態中の見た目を切り替える
-        If player_hp >= 3 Then
-            Player.Image = My.Resources.player_invincible
-        ElseIf player_hp = 2 Then
-            Player.Image = My.Resources.player_warning_invincible
-        ElseIf player_hp = 1 Then
-            Player.Image = My.Resources.player_danger_invincible
-        End If
+        player_invincible_to = ftime + invincible_fspan
+        player_invincible_from = ftime
     End Sub
 
     'プレイヤーの無敵状態を終了する
     Private Sub Player_Invincible_Stop()
         Debug.Assert(player_invincible, "無敵状態中に呼ぶ関数です。")
 
-        player_invincible = False
-
-        'Playerの残り体力で、無敵状態中の見た目を切り替える
-        If player_hp >= 3 Then
-            Player.Image = My.Resources.player
-        ElseIf player_hp = 2 Then
-            Player.Image = My.Resources.player_warning
-        ElseIf player_hp = 1 Then
-            Player.Image = My.Resources.player_danger
-        End If
+        player_invincible_to = Nothing
+        player_invincible_from = Nothing
     End Sub
 
     'プレイヤーのHPを更新し、体力ゲージに反映する
@@ -235,25 +189,6 @@ Public Class Form1
         Game_Init()
     End Sub
 
-    Private Sub Generate_Fireball()
-        Dim width As Integer = 36
-        Dim fireball As New PictureBox With {
-            .Size = New Size(width, 41),
-            .BorderStyle = BorderStyle.Fixed3D,
-            .Image = My.Resources.fire_ball,
-            .SizeMode = PictureBoxSizeMode.StretchImage,
-            .Top = 0,
-            .Left = Math.Min( 'プレイヤーの周辺200以内に生成する
-                Panel_Game.Width - width,
-                Math.Max(
-                    0,
-                    Player.Left - fireball_gen_range / 2 + random.Next(fireball_gen_range + Player.Width)
-                )
-            )
-        }
-        Fireball_Group.Controls.Add(fireball)
-    End Sub
-
     Private Sub Game_Over()
         'ゲームが終了する
         Game_Stop()
@@ -279,10 +214,6 @@ Public Class Form1
         Timer1.Interval = 10
         game_inited = True
 
-
-        'ゲームオブジェクト初期化
-        stage = New Stage1(Me, 0)
-
         Game_Start()
     End Sub
 
@@ -293,97 +224,84 @@ Public Class Form1
         game_stopped = False
     End Sub
 
-    Private Sub Label_Stage_Time_Left_Click(sender As Object, e As EventArgs) Handles Label_Stage_Time_Left.Click
+End Class
 
-    End Sub
+
+Public MustInherit Class Stage
+    '1フレームごとに、敵の追加、移動、削除を行う
+    '衝突処理は別の所で行うため不要
+    Public MustOverride Sub Update_Enemies()
+
 End Class
 
 
 Public Class Stage1
-    '難易度調整のために、親ゲームクラスのプロパティの書き換えに使う
-    Dim Game As Form1
-    'ステージ番号
-    Public index As Integer = 0
-    'ステージの継続フレーム時間
-    Public fspan As Integer = 4200
-    'このカウントが fspan と等しくなったとき、ステージクリア
-    Public tick_count As Integer = 0
-    'ステージの難易度
-    Public stage_difficulty As Integer
+    Inherits Stage
 
-    '難易度調整用の変数 ここから
-    'ステージの難易度が４段階ある。
-    '各難易度ごとに、残り時間に応じてさらに４段階ある。
-    '
+    Dim game As Form1
 
-    '          残り時間に応じた難易度→
-    '               0  1  2  3
-    ' ステージ  0  低
-    '    ↓     1
-    '           2
-    '           3　　　　　  高
-    '
-    '
-    ''Fireballを生成するフレーム間隔. この値が小さいほど、多く生成される
-    Dim Fireball_gen_fspan As Integer(,) = {
-        {25, 24, 23, 22},
-        {23, 22, 21, 20},
-        {20, 17, 16, 15},
-        {15, 13, 11, 10}
-    }
-    'Fireballを生成する範囲. この値が小さいほど、プレイヤーの近くに生成される
-    Dim Fireball_gen_range As Integer(,) = {
-        {500, 450, 400, 350},
-        {400, 350, 300, 250},
-        {300, 250, 200, 170},
-        {170, 150, 120, 100}
-    }
-    'Fireballの速度. この値が大きいほど、速くなる
-    Dim Fireball_speed As Integer(,) = {
-        {3, 3, 4, 5},
-        {4, 5, 6, 7},
-        {6, 7, 8, 9},
-        {8, 9, 10, 11}
-    }
+    'ステージが開始されてからの経過時間
+    Dim ftime As Integer
 
-    '残りフレーム時間
-    ReadOnly Property Ftime_left As Integer
-        Get
-            Return fspan - tick_count
-        End Get
-    End Property
-
-    Sub New(ByRef _Game As Form1, stage_difficulty As Integer)
-        Game = _Game
-        Me.stage_difficulty = stage_difficulty
-        Init_Difficulty_Params()
+    Sub New(ByRef _Game As Form1)
+        game = _Game
+        ftime = 0
     End Sub
 
-    '難易度を初期化する
-    Private Sub Init_Difficulty_Params()
-        Game.fireball_generatable = True
-        Game.fireball_atk = 1
-        '残り時間に応じた難易度は 0
-        Game.fireball_gen_fspan = Fireball_gen_fspan(stage_difficulty, 0)
-        Game.fireball_gen_range = Fireball_gen_range(stage_difficulty, 0)
-        Game.fireball_speed = Fireball_speed(stage_difficulty, 0)
+    '1フレームごとに、敵の追加、移動、削除を行う
+    '衝突処理は別の所で行うため不要
+    Public Overrides Sub Update_Enemies()
+        For Each _enemy In game.Panel_Enemy.Controls
+            Dim enemy As Enemy = DirectCast(_enemy, Enemy)
+            enemy.On_F_Update()
+        Next
+    End Sub
+End Class
+
+Public MustInherit Class Enemy
+    Inherits PictureBox
+
+    'プレイヤーと衝突したときに呼ばれる
+    Public MustOverride Sub On_Player_Collision()
+
+    '1フレームごとの移動、削除を行う
+    '衝突処理は別の所で処理するため不要
+    Public MustOverride Sub On_F_Update()
+
+End Class
+
+
+Public Class Fireball
+    Inherits Enemy
+
+    'このオブジェクトがゲーム画面に出現した時刻
+    'フレームごとのアニメーションなどに使う
+    Dim spawn_ftime As Integer
+
+    'プレイヤーと衝突したときに与えるダメージ
+    Dim atk As Integer = 1
+
+    '1フレームごとの移動量
+    Dim speed As Integer = 5
+
+    Sub New(spawn_ftime As Integer)
+        Me.spawn_ftime = spawn_ftime
+
+        'スタイル
+        Me.Size = New Size(36, 41)
+        Me.BorderStyle = BorderStyle.Fixed3D
+        Me.Image = My.Resources.fire_ball
+        Me.SizeMode = PictureBoxSizeMode.StretchImage
     End Sub
 
-    'ステージの残り時間に応じて、難易度を上げる
-    Public Sub Difficulty_Up_By_Ftime_left()
-        '残り時間に応じた難易度をセット
-        Dim time_left_difficulty As Integer
-        If Ftime_left <= fspan * 0.2 Then
-            time_left_difficulty = 3
-        ElseIf Ftime_left <= fspan * 0.5 Then
-            time_left_difficulty = 2
-        ElseIf Ftime_left <= fspan * 0.75 Then
-            time_left_difficulty = 1
-        End If
+    'プレイヤーと衝突したときに呼ばれる
+    Public Overrides Sub On_Player_Collision()
 
-        '難易度調整パラメータ更新
-        Game.fireball_gen_fspan = Fireball_gen_fspan(stage_difficulty, time_left_difficulty)
-        Game.fireball_gen_range = Fireball_gen_range(stage_difficulty, time_left_difficulty)
-        Game.fireball_speed = Fireball_speed(stage_difficulty, time_left_difficulty)
+    End Sub
+
+    '1フレームごとの移動、削除を行う
+    '衝突処理は別の所で処理するため不要
+    Public Overrides Sub On_F_Update()
+
     End Sub
 End Class

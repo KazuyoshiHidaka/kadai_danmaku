@@ -25,7 +25,7 @@ Partial Class Form1
         components = New ComponentModel.Container()
         Player = New PictureBox()
         Timer1 = New Timer(components)
-        Fireball_Group = New Panel()
+        Panel_Enemy = New Panel()
         Panel_Game = New Panel()
         Panel_Info = New Panel()
         Label_Stage_Time_Left = New Label()
@@ -58,19 +58,19 @@ Partial Class Form1
         ' 
         Timer1.Interval = 10
         ' 
-        ' Fireball_Group
+        ' Panel_Enemy
         ' 
-        Fireball_Group.ForeColor = Color.CornflowerBlue
-        Fireball_Group.Location = New Point(0, 0)
-        Fireball_Group.Name = "Fireball_Group"
-        Fireball_Group.Size = New Size(800, 600)
-        Fireball_Group.TabIndex = 1
+        Panel_Enemy.ForeColor = Color.CornflowerBlue
+        Panel_Enemy.Location = New Point(0, 0)
+        Panel_Enemy.Name = "Panel_Enemy"
+        Panel_Enemy.Size = New Size(800, 600)
+        Panel_Enemy.TabIndex = 1
         ' 
         ' Panel_Game
         ' 
         Panel_Game.BorderStyle = BorderStyle.FixedSingle
         Panel_Game.Controls.Add(Player)
-        Panel_Game.Controls.Add(Fireball_Group)
+        Panel_Game.Controls.Add(Panel_Enemy)
         Panel_Game.Location = New Point(0, 0)
         Panel_Game.Name = "Panel_Game"
         Panel_Game.Size = New Size(800, 600)
@@ -160,7 +160,7 @@ Partial Class Form1
 
     Friend WithEvents Player As PictureBox
     Friend WithEvents Timer1 As Timer
-    Friend WithEvents Fireball_Group As Panel
+    Friend WithEvents Panel_Enemy As Panel
     Friend WithEvents Panel_Game As Panel
     Friend WithEvents Panel_Info As Panel
     Friend WithEvents Panel_Player_HP As FlowLayoutPanel
