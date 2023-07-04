@@ -1,4 +1,8 @@
-﻿Public Class Form1
+﻿Imports System.Numerics
+Imports System.Threading
+Imports System.ComponentModel
+
+Public Class Game
 
     'ゲーム開始からの経過フレーム時間
     Dim ftime As Integer = 0
@@ -39,8 +43,16 @@
 
     Dim random As New Random
 
+    Public Sub New()
 
-    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        ' この呼び出しはデザイナーで必要です。
+        InitializeComponent()
+
+        ' InitializeComponent() 呼び出しの後で初期化を追加します。
+
+    End Sub
+
+    Private Sub Main_Timer_Tick(sender As Object, e As EventArgs) Handles Main_Timer.Tick
 
         '=== Player移動
         'キー同時押しに対応するために、別個にIf文を使う
@@ -65,7 +77,7 @@
         If key_down_pressed Then
             Player.Top = Math.Min(
                 Player.Top + player_speed,
-                Panel_Game.Height - Player.Height '下端より下に行かないように
+Panel_Game.Height - Player.Height '下端より下に行かないように
             )
         End If
 
@@ -194,13 +206,12 @@
     Private Sub Game_Stop()
         'ゲームを一時停止する
         'ゲーム画面の動きを止めるだけ
-        Timer1.Enabled = False
+        Main_Timer.Enabled = False
         game_stopped = True
     End Sub
 
     Private Sub Game_Init()
         'ゲームを開始する. 初めの一回のみ. 途中から再開するのは Game_Start
-        Timer1.Interval = 10
         game_inited = True
 
         Game_Start()
@@ -209,92 +220,7 @@
     Private Sub Game_Start()
         'ゲームを一時停止状態から再開する
         'ゲーム画面が動き始める
-        Timer1.Enabled = True
+        Main_Timer.Enabled = True
         game_stopped = False
-    End Sub
-
-End Class
-
-
-Public MustInherit Class Stage
-    Inherits Panel
-
-    '1フレームごとに、敵の追加、移動、削除を行う
-    '衝突処理は別の所で行うため不要
-    Public MustOverride Sub Update_Enemies()
-
-End Class
-
-
-Public Class Stage1
-    Inherits Stage
-
-    Dim game As Form1
-
-    'ステージが開始されてからの経過時間
-    Dim ftime As Integer
-
-    Sub New(ByRef _Game As Form1)
-        MyBase.New()
-        game = _Game
-        ftime = 0
-    End Sub
-
-    '1フレームごとに、敵の追加、移動、削除を行う
-    '衝突処理は別の所で行うため不要
-    Public Overrides Sub Update_Enemies()
-        For Each _enemy In game.Panel_Enemy.Controls
-            Dim enemy As Enemy = DirectCast(_enemy, Enemy)
-            enemy.On_F_Update()
-        Next
-    End Sub
-End Class
-
-Public MustInherit Class Enemy
-    Inherits PictureBox
-
-    'プレイヤーと衝突したときに呼ばれる
-    Public MustOverride Sub On_Player_Collision()
-
-    '1フレームごとの移動、削除を行う
-    '衝突処理は別の所で処理するため不要
-    Public MustOverride Sub On_F_Update()
-
-End Class
-
-
-Public Class Fireball
-    Inherits Enemy
-
-    'このオブジェクトがゲーム画面に出現した時刻
-    'フレームごとのアニメーションなどに使う
-    Dim spawn_ftime As Integer
-
-    'プレイヤーと衝突したときに与えるダメージ
-    Dim atk As Integer = 1
-
-    '1フレームごとの移動量
-    Dim speed As Integer = 5
-
-    Sub New(spawn_ftime As Integer)
-        MyBase.New()
-        Me.spawn_ftime = spawn_ftime
-
-        'スタイル
-        Me.Size = New Size(36, 41)
-        Me.BorderStyle = BorderStyle.Fixed3D
-        Me.Image = My.Resources.fire_ball
-        Me.SizeMode = PictureBoxSizeMode.StretchImage
-    End Sub
-
-    'プレイヤーと衝突したときに呼ばれる
-    Public Overrides Sub On_Player_Collision()
-
-    End Sub
-
-    '1フレームごとの移動、削除を行う
-    '衝突処理は別の所で処理するため不要
-    Public Overrides Sub On_F_Update()
-
     End Sub
 End Class

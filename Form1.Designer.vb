@@ -28,7 +28,6 @@ Partial Class Form1
         Panel_Enemy = New Panel()
         Panel_Game = New Panel()
         Panel_Info = New Panel()
-        Label_Stage_Time_Left = New Label()
         Panel_Player_HP = New FlowLayoutPanel()
         Img_Player_HP = New PictureBox()
         PictureBox1 = New PictureBox()
@@ -78,20 +77,11 @@ Partial Class Form1
         ' 
         ' Panel_Info
         ' 
-        Panel_Info.Controls.Add(Label_Stage_Time_Left)
         Panel_Info.Controls.Add(Panel_Player_HP)
         Panel_Info.Location = New Point(0, 600)
         Panel_Info.Name = "Panel_Info"
         Panel_Info.Size = New Size(800, 150)
         Panel_Info.TabIndex = 1
-        ' 
-        ' Label_Stage_Time_Left
-        ' 
-        Label_Stage_Time_Left.Font = New Font("Yu Gothic UI", 18F, FontStyle.Regular, GraphicsUnit.Point)
-        Label_Stage_Time_Left.Location = New Point(661, 21)
-        Label_Stage_Time_Left.Name = "Label_Stage_Time_Left"
-        Label_Stage_Time_Left.Size = New Size(94, 51)
-        Label_Stage_Time_Left.TabIndex = 1
         ' 
         ' Panel_Player_HP
         ' 
@@ -167,5 +157,4 @@ Partial Class Form1
     Friend WithEvents Img_Player_HP As PictureBox
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents PictureBox2 As PictureBox
-    Friend WithEvents Label_Stage_Time_Left As Label
 End Class
