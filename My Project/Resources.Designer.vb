@@ -63,9 +63,29 @@ Namespace My.Resources
         '''<summary>
         '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         '''</summary>
+        Friend ReadOnly Property bg_stone() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("bg_stone", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        '''</summary>
         Friend ReadOnly Property fire_ball() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("fire_ball", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        '''</summary>
+        Friend ReadOnly Property fireball() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("fireball", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

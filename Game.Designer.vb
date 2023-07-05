@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class Game
+Partial Class GamePage
     Inherits System.Windows.Forms.UserControl
 
     'UserControl はコンポーネント一覧をクリーンアップするために dispose をオーバーライドします。
@@ -31,10 +31,11 @@ Partial Class Game
         Img_HP_3 = New PictureBox()
         Panel_Game = New Panel()
         Panel_Enemy = New Panel()
+        Label_Stage_Clear = New Label()
         Main_Timer = New Timer(components)
         Panel_Pause = New Panel()
-        Label1 = New Label()
         Label2 = New Label()
+        Label1 = New Label()
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Info.SuspendLayout()
         Panel_Player_HP.SuspendLayout()
@@ -110,6 +111,7 @@ Partial Class Game
         ' 
         ' Panel_Game
         ' 
+        Panel_Game.BackColor = Color.Transparent
         Panel_Game.BorderStyle = BorderStyle.FixedSingle
         Panel_Game.Controls.Add(Player)
         Panel_Game.Controls.Add(Panel_Enemy)
@@ -120,11 +122,25 @@ Partial Class Game
         ' 
         ' Panel_Enemy
         ' 
+        Panel_Enemy.BackColor = Color.Transparent
         Panel_Enemy.ForeColor = Color.CornflowerBlue
         Panel_Enemy.Location = New Point(0, 0)
         Panel_Enemy.Name = "Panel_Enemy"
         Panel_Enemy.Size = New Size(800, 600)
         Panel_Enemy.TabIndex = 1
+        Panel_Enemy.Visible = False
+        ' 
+        ' Label_Stage_Clear
+        ' 
+        Label_Stage_Clear.AutoSize = True
+        Label_Stage_Clear.Font = New Font("Yu Gothic UI", 18F, FontStyle.Bold, GraphicsUnit.Point)
+        Label_Stage_Clear.ForeColor = Color.White
+        Label_Stage_Clear.Location = New Point(284, 302)
+        Label_Stage_Clear.Name = "Label_Stage_Clear"
+        Label_Stage_Clear.Size = New Size(249, 48)
+        Label_Stage_Clear.TabIndex = 0
+        Label_Stage_Clear.Text = "ステージクリア！"
+        Label_Stage_Clear.Visible = False
         ' 
         ' Main_Timer
         ' 
@@ -141,18 +157,6 @@ Partial Class Game
         Panel_Pause.Size = New Size(800, 750)
         Panel_Pause.TabIndex = 0
         ' 
-        ' Label1
-        ' 
-        Label1.AutoSize = True
-        Label1.BackColor = Color.Transparent
-        Label1.Font = New Font("Yu Gothic UI", 18F, FontStyle.Bold, GraphicsUnit.Point)
-        Label1.ForeColor = Color.White
-        Label1.Location = New Point(358, 173)
-        Label1.Name = "Label1"
-        Label1.Size = New Size(105, 48)
-        Label1.TabIndex = 0
-        Label1.Text = "ポーズ"
-        ' 
         ' Label2
         ' 
         Label2.AutoSize = True
@@ -165,14 +169,27 @@ Partial Class Game
         Label2.TabIndex = 1
         Label2.Text = "Escキーで再開"
         ' 
-        ' Game
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.BackColor = Color.Transparent
+        Label1.Font = New Font("Yu Gothic UI", 18F, FontStyle.Bold, GraphicsUnit.Point)
+        Label1.ForeColor = Color.White
+        Label1.Location = New Point(358, 173)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(105, 48)
+        Label1.TabIndex = 0
+        Label1.Text = "ポーズ"
+        ' 
+        ' GamePage
         ' 
         AutoScaleDimensions = New SizeF(10F, 25F)
         AutoScaleMode = AutoScaleMode.Font
         Controls.Add(Panel_Game)
         Controls.Add(Panel_Info)
         Controls.Add(Panel_Pause)
-        Name = "Game"
+        Controls.Add(Label_Stage_Clear)
+        Name = "GamePage"
         Size = New Size(800, 750)
         CType(Player, ComponentModel.ISupportInitialize).EndInit()
         Panel_Info.ResumeLayout(False)
@@ -185,6 +202,7 @@ Partial Class Game
         Panel_Pause.ResumeLayout(False)
         Panel_Pause.PerformLayout()
         ResumeLayout(False)
+        PerformLayout()
     End Sub
     Friend WithEvents Player As PictureBox
     Friend WithEvents Panel_Info As Panel
@@ -198,4 +216,5 @@ Partial Class Game
     Friend WithEvents Panel_Pause As Panel
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
+    Friend WithEvents Label_Stage_Clear As Label
 End Class

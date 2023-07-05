@@ -3,7 +3,7 @@ Imports System.Threading
 Imports System.ComponentModel
 
 'ゲーム画面
-Public Class Game
+Public Class GamePage
     'フォームのインスタンス
     Dim form As Form1
 
@@ -12,7 +12,7 @@ Public Class Game
 
     '現在進行中のステージ
     'Nullチェック必要!!
-    Dim stage As Stage
+    Public stage As Stage
 
     Dim player_speed As Integer = 5
     Dim player_hp As Integer = 3
@@ -44,7 +44,7 @@ Public Class Game
     'ゲームクリア!
     Dim game_clear As Boolean = False
 
-    Dim random As New Random
+    Public random As New Random
 
     Public Sub New(_form As Form1)
         InitializeComponent()
@@ -76,43 +76,89 @@ Public Class Game
         If key_down_pressed Then
             Player.Top = Math.Min(
                 Player.Top + player_speed,
-Panel_Game.Height - Player.Height '下端より下に行かないように
+                Panel_Game.Height - Player.Height '下端より下に行かないように
             )
         End If
 
 
         If stage IsNot Nothing Then
             '進行中のステージがある時:
-            '敵の追加, 移動, 削除
-            stage.Update_Enemies()
+
+            If stage.Is_Cleared Then
+                'ステージクリアした時
+                Label_Stage_Clear.Visible = True
+
+                'ステージクリア!!を数フレーム間 表示し、
+                '終わったら次のステージへ
+                If (ftime - stage.Cleared_At) >= 100 Then
+                    Label_Stage_Clear.Visible = False
+                ElseIf (ftime - stage.Cleared_At) >= 150 Then
+
+                End If
+            Else
+                '敵の追加, 移動, 削除
+                stage.Update_Enemies()
+            End If
         End If
 
         'プレイヤーと敵との衝突処理
+        '
+        '今は、
+        '- 無敵時間中は敵と衝突しても何も起こらない
+        '- 衝突判定は、全て長方形同士の重なりチェックで対応できる
+        'という前提で成り立つ記述をしている
+        '
         If Not Player_Invincible Then
             For Each _enemy In Panel_Enemy.Controls
                 Dim enemy As Enemy = DirectCast(_enemy, Enemy)
-                enemy.On_Player_Collision()
+
+                If Player.Bounds.IntersectsWith(enemy.Bounds) Then
+                    enemy.On_Player_Collision()
+                End If
             Next
         End If
 
 
-        If player_invincible_to IsNot Nothing Then
+        'プレイヤーが有利になるように、
+        '衝突処理などの後で無敵解除処理を行う
+        '
+        'こうすることで
+        '無敵が解除される時の1フレーム内において、
+        '敵からダメージを負ったりしなくなる
+
+        If Player_Invincible Then
             'プレイヤー無敵中の場合
             If player_invincible_to < ftime Then
-                '解除
+                '無敵時間を過ぎた場合、解除
                 Player_Invincible_Stop()
+
+                '点滅アニメーションにより、
+                'Visible: Falseの状態で無敵時間を過ぎてしまった場合の対策
+                Player.Visible = True
+            Else
+                '無敵時間内の時
+                'プレイヤーを点滅させ、無敵状態であることを示す
+
+                '無敵状態の経過時間
+                Dim elapsed_time As Integer = ftime - player_invincible_from
+                If elapsed_time Mod 5 = 0 Then
+                    Player.Visible = Not Player.Visible
+                End If
             End If
         End If
 
+        'ftimeの更新が、この関数の最初にあると、
+        '各処理において 時刻 0 が訪れなくなるため、
+        '最後に書く
         ftime += 1
     End Sub
 
 
     'プレイヤーがダメージを受けた時の処理
-    Private Sub Player_Damaged(damage As Integer)
+    Public Sub Player_Damaged(damage As Integer)
         Debug.Assert(Not Player_Invincible, "無敵時間中はダメージを負いません. ")
 
-        Update_Player_HP(player_hp - 1)
+        Update_Player_HP(player_hp - damage)
         Player_Invincible_Start(player_damaged_invincible_fspan)
         'HPが減った時のPlayerの見た目の変更は
         '無敵状態終了処理で行われるため、ここでは不要

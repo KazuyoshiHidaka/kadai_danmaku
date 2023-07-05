@@ -17,8 +17,8 @@
         }
     End Function
 
-    Private Function Init_Game_Page() As Game
-        Return New Game(Me) With {
+    Private Function Init_Game_Page() As GamePage
+        Return New GamePage(Me) With {
             .Location = New Point(0, 0)
         }
     End Function
@@ -28,22 +28,18 @@
         'Top画面でスタートボタンがクリックされた時の処理
         'ゲーム画面へ切り替え
         Me.Controls.Clear()
-        current_page = Init_Game_Page()
-        Me.Controls.Add(current_page)
+        Dim game As GamePage = Init_Game_Page()
+        Dim stage As Stage = New Stage1()
+        game.stage = stage
+
+        current_page = game
+        Me.Controls.Add(game)
 
         'ゲーム画面が、キーボード入力を受け取れるように Focus する
         current_page.Focus()
+
+        stage.Start(game)
     End Sub
 End Class
 
-
-
-Public MustInherit Class Stage
-    Inherits Panel
-
-    '1フレームごとに、敵の追加、移動、削除を行う
-    '衝突処理は別の所で行うため不要
-    Public MustOverride Sub Update_Enemies()
-
-End Class
 
