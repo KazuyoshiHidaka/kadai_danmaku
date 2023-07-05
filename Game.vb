@@ -2,11 +2,13 @@
 Imports System.Threading
 Imports System.ComponentModel
 
+'ゲーム画面
 Public Class Game
-
+    'フォームのインスタンス
+    Dim form As Form1
 
     'ゲーム開始からの経過フレーム時間
-    Dim ftime As Integer = 0
+    Public ftime As Integer = 0
 
     '現在進行中のステージ
     'Nullチェック必要!!
@@ -43,6 +45,11 @@ Public Class Game
     Dim game_clear As Boolean = False
 
     Dim random As New Random
+
+    Public Sub New(_form As Form1)
+        InitializeComponent()
+        form = _form
+    End Sub
 
     Private Sub Main_Timer_Tick(sender As Object, e As EventArgs) Handles Main_Timer.Tick
 
@@ -159,11 +166,11 @@ Panel_Game.Height - Player.Height '下端より下に行かないように
         ElseIf keyData = Keys.Down Then
             key_down_pressed = True
         ElseIf game_inited And keyData = Keys.Escape Then
-            'ゲーム 一時停止/再開
+            'ポーズ画面を 開く/閉じる
             If game_stopped Then
-                Game_Start()
+                Close_Panel_Pause()
             Else
-                Game_Stop()
+                Open_Panel_Pause()
             End If
         Else
             Return MyBase.ProcessCmdKey(msg, keyData)
@@ -208,6 +215,17 @@ Panel_Game.Height - Player.Height '下端より下に行かないように
         game_stopped = True
     End Sub
 
+    Private Sub Open_Panel_Pause()
+        'ゲームを一時停止し、ポーズ画面を開く
+        Game_Stop()
+        Panel_Pause.BringToFront()
+    End Sub
+    Private Sub Close_Panel_Pause()
+        'ポーズ画面を閉じ、ゲームを再開する
+        Panel_Pause.SendToBack()
+        Game_Start()
+    End Sub
+
     Private Sub Game_Init()
         'ゲームを開始する. 初めの一回のみ. 途中から再開するのは Game_Start
         game_inited = True
@@ -222,3 +240,4 @@ Panel_Game.Height - Player.Height '下端より下に行かないように
         game_stopped = False
     End Sub
 End Class
+

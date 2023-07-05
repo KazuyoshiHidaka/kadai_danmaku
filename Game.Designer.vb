@@ -32,6 +32,9 @@ Partial Class Game
         Panel_Game = New Panel()
         Panel_Enemy = New Panel()
         Main_Timer = New Timer(components)
+        Panel_Pause = New Panel()
+        Label1 = New Label()
+        Label2 = New Label()
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Info.SuspendLayout()
         Panel_Player_HP.SuspendLayout()
@@ -39,6 +42,7 @@ Partial Class Game
         CType(Img_HP_2, ComponentModel.ISupportInitialize).BeginInit()
         CType(Img_HP_3, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Game.SuspendLayout()
+        Panel_Pause.SuspendLayout()
         SuspendLayout()
         ' 
         ' Player
@@ -124,14 +128,50 @@ Partial Class Game
         ' 
         ' Main_Timer
         ' 
+        Main_Timer.Enabled = True
         Main_Timer.Interval = 13
+        ' 
+        ' Panel_Pause
+        ' 
+        Panel_Pause.BackColor = SystemColors.WindowFrame
+        Panel_Pause.Controls.Add(Label2)
+        Panel_Pause.Controls.Add(Label1)
+        Panel_Pause.Location = New Point(0, 0)
+        Panel_Pause.Name = "Panel_Pause"
+        Panel_Pause.Size = New Size(800, 750)
+        Panel_Pause.TabIndex = 0
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.BackColor = Color.Transparent
+        Label1.Font = New Font("Yu Gothic UI", 18F, FontStyle.Bold, GraphicsUnit.Point)
+        Label1.ForeColor = Color.White
+        Label1.Location = New Point(358, 173)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(105, 48)
+        Label1.TabIndex = 0
+        Label1.Text = "ポーズ"
+        ' 
+        ' Label2
+        ' 
+        Label2.AutoSize = True
+        Label2.BackColor = Color.Transparent
+        Label2.Font = New Font("Yu Gothic UI", 12F, FontStyle.Regular, GraphicsUnit.Point)
+        Label2.ForeColor = Color.White
+        Label2.Location = New Point(338, 262)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(147, 32)
+        Label2.TabIndex = 1
+        Label2.Text = "Escキーで再開"
         ' 
         ' Game
         ' 
-        AutoScaleDimensions = New SizeF(10.0F, 25.0F)
+        AutoScaleDimensions = New SizeF(10F, 25F)
         AutoScaleMode = AutoScaleMode.Font
         Controls.Add(Panel_Game)
         Controls.Add(Panel_Info)
+        Controls.Add(Panel_Pause)
         Name = "Game"
         Size = New Size(800, 750)
         CType(Player, ComponentModel.ISupportInitialize).EndInit()
@@ -142,6 +182,8 @@ Partial Class Game
         CType(Img_HP_2, ComponentModel.ISupportInitialize).EndInit()
         CType(Img_HP_3, ComponentModel.ISupportInitialize).EndInit()
         Panel_Game.ResumeLayout(False)
+        Panel_Pause.ResumeLayout(False)
+        Panel_Pause.PerformLayout()
         ResumeLayout(False)
     End Sub
     Friend WithEvents Player As PictureBox
@@ -153,4 +195,7 @@ Partial Class Game
     Friend WithEvents Panel_Game As Panel
     Friend WithEvents Panel_Enemy As Panel
     Friend WithEvents Main_Timer As Timer
+    Friend WithEvents Panel_Pause As Panel
+    Friend WithEvents Label2 As Label
+    Friend WithEvents Label1 As Label
 End Class

@@ -22,17 +22,37 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        components = New ComponentModel.Container()
+        Timer = New Timer(components)
+        Panel_Mask = New Panel()
         SuspendLayout()
+        ' 
+        ' Timer
+        ' 
+        ' 
+        ' Panel_Mask
+        ' 
+        Panel_Mask.BackColor = Color.Black
+        Panel_Mask.Location = New Point(0, 0)
+        Panel_Mask.Name = "Panel_Mask"
+        Panel_Mask.Size = New Size(800, 750)
+        Panel_Mask.TabIndex = 0
+        Panel_Mask.Visible = False
         ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(10.0F, 25.0F)
         AutoScaleMode = AutoScaleMode.Font
         AutoSize = True
+        AutoSizeMode = AutoSizeMode.GrowAndShrink
         ClientSize = New Size(778, 694)
+        Controls.Add(Panel_Mask)
         KeyPreview = True
         Name = "Form1"
         Text = "Form1"
         ResumeLayout(False)
     End Sub
+
+    Friend WithEvents Timer As Timer
+    Friend WithEvents Panel_Mask As Panel
 End Class
