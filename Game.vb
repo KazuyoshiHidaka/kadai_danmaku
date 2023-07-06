@@ -269,7 +269,7 @@ Public Class GamePage
         End If
 
         Dim ftime_from_game_over As Integer = ftime - game_over_time
-        If (ftime_from_game_over > 100) Then
+        If (ftime_from_game_over > 150) Then
             form.Open_Top_Page()
         End If
     End Sub

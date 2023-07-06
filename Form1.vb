@@ -28,9 +28,12 @@
     Public Sub Opan_Game_Page(start_stage_i As Integer)
         'Top画面でスタートボタンがクリックされた時の処理
         'ゲーム画面へ切り替え
-        Me.Controls.Clear()
         Dim game As GamePage = Init_Game_Page()
+
+        '画面のちらつきを防ぐため、
+        '次のページをAddしてから、前のページをDisposeする
         Me.Controls.Add(game)
+        current_page?.Dispose()
         current_page = game
 
         'ゲーム画面が、キーボード入力を受け取れるように Focus する
@@ -43,10 +46,13 @@
     Public Sub Open_Top_Page()
         'タイマーのイベントなども破棄したいので、
         'Controls.Remove ではなく Dispose を使う
-        current_page?.Dispose()
 
         Dim top As TopPage = Init_Top_Page()
+
+        '画面のちらつきを防ぐため、
+        '次のページをAddしてから、前のページをDisposeする
         Me.Controls.Add(top)
+        current_page?.Dispose()
         current_page = top
     End Sub
 End Class
