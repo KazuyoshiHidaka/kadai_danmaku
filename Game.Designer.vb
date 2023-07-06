@@ -36,6 +36,9 @@ Partial Class GamePage
         Label1 = New Label()
         Label2 = New Label()
         Panel_Pause = New Panel()
+        Panel_Game_Over = New Panel()
+        Label5 = New Label()
+        Label3 = New Label()
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Info.SuspendLayout()
         Panel_Player_HP.SuspendLayout()
@@ -44,6 +47,7 @@ Partial Class GamePage
         CType(Img_HP_3, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Game.SuspendLayout()
         Panel_Pause.SuspendLayout()
+        Panel_Game_Over.SuspendLayout()
         SuspendLayout()
         ' 
         ' Player
@@ -183,6 +187,40 @@ Partial Class GamePage
         Panel_Pause.Size = New Size(800, 750)
         Panel_Pause.TabIndex = 0
         ' 
+        ' Panel_Game_Over
+        ' 
+        Panel_Game_Over.BackColor = Color.Black
+        Panel_Game_Over.Controls.Add(Label5)
+        Panel_Game_Over.Controls.Add(Label3)
+        Panel_Game_Over.Location = New Point(0, 0)
+        Panel_Game_Over.Name = "Panel_Game_Over"
+        Panel_Game_Over.Size = New Size(800, 750)
+        Panel_Game_Over.TabIndex = 0
+        Panel_Game_Over.Visible = False
+        ' 
+        ' Label5
+        ' 
+        Label5.AutoSize = True
+        Label5.BackColor = Color.Transparent
+        Label5.Font = New Font("Yu Gothic UI", 12F, FontStyle.Regular, GraphicsUnit.Point)
+        Label5.ForeColor = Color.White
+        Label5.Location = New Point(306, 288)
+        Label5.Name = "Label5"
+        Label5.Size = New Size(198, 32)
+        Label5.TabIndex = 2
+        Label5.Text = "諦めるのはまだ早い"
+        ' 
+        ' Label3
+        ' 
+        Label3.AutoSize = True
+        Label3.Font = New Font("Arial Black", 18F, FontStyle.Regular, GraphicsUnit.Point)
+        Label3.ForeColor = Color.White
+        Label3.Location = New Point(287, 170)
+        Label3.Name = "Label3"
+        Label3.Size = New Size(239, 51)
+        Label3.TabIndex = 0
+        Label3.Text = "Game Over"
+        ' 
         ' GamePage
         ' 
         AutoScaleDimensions = New SizeF(10F, 25F)
@@ -190,6 +228,7 @@ Partial Class GamePage
         Controls.Add(Panel_Game)
         Controls.Add(Panel_Info)
         Controls.Add(Panel_Pause)
+        Controls.Add(Panel_Game_Over)
         Name = "GamePage"
         Size = New Size(800, 750)
         CType(Player, ComponentModel.ISupportInitialize).EndInit()
@@ -203,6 +242,8 @@ Partial Class GamePage
         Panel_Game.PerformLayout()
         Panel_Pause.ResumeLayout(False)
         Panel_Pause.PerformLayout()
+        Panel_Game_Over.ResumeLayout(False)
+        Panel_Game_Over.PerformLayout()
         ResumeLayout(False)
     End Sub
     Friend WithEvents Player As PictureBox
@@ -218,4 +259,7 @@ Partial Class GamePage
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents Panel_Pause As Panel
+    Friend WithEvents Panel_Game_Over As Panel
+    Friend WithEvents Label3 As Label
+    Friend WithEvents Label5 As Label
 End Class

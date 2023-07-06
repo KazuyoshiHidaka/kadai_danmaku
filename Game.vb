@@ -5,7 +5,7 @@ Imports System.ComponentModel
 'ゲーム画面
 Public Class GamePage
     'フォームのインスタンス
-    Dim form As Form1
+    Public form As Form1
 
     'ゲーム開始からの経過フレーム時間
     Public ftime As Integer = 0
@@ -14,7 +14,7 @@ Public Class GamePage
     'Nullチェック必要!!
     Public current_stage_i As Integer?
 
-    Public Stages() As Stage = {New Stage1(), New Stage2()}
+    Public Stages() As Stage = {New Stage1(), New Stage2(), New StageGameClear()}
 
     Public player_speed As Integer = 5
     Dim player_hp As Integer = 3
@@ -43,6 +43,10 @@ Public Class GamePage
     Dim game_inited As Boolean = False
     'ゲームが一時停止中か
     Dim game_stopped As Boolean = False
+    'ゲームオーバーした時の時刻
+    'Nothingの場合、ゲームオーバーではない
+    'ゲームオーバー時のアニメーションに使う
+    Dim game_over_time As Integer?
 
     Public random As New Random
 
@@ -52,6 +56,15 @@ Public Class GamePage
     End Sub
 
     Private Sub Main_Timer_Tick(sender As Object, e As EventArgs) Handles Main_Timer.Tick
+
+        If game_over_time IsNot Nothing Then
+            'ゲームオーバーした時
+            F_Update_Game_Over()
+            ftime += 1
+            Return
+        End If
+
+        '======== ゲーム進行中 ==================================
 
         '=== Player移動
         'キー同時押しに対応するために、別個にIf文を使う
@@ -97,6 +110,8 @@ Public Class GamePage
                     '次のステージへ
                     current_stage_i += 1
                     Stages(current_stage_i).Start(Me)
+
+                    'ゲームクリア処理は、StageGameClearで行う
                 End If
             Else
                 'ステージがまだ進行中の時
@@ -106,15 +121,7 @@ Public Class GamePage
                     'ちょうどクリアした時
                     Label_Stage_Clear.Visible = True
                     Label_Stage_Clear.BringToFront()
-
-                    If current_stage_i = Stages.Length - 1 Then
-                        '最終ステージの場合、ゲームクリア
-                        current_stage_i = Nothing
-                        Game_Clear()
-                    End If
                 End If
-
-
             End If
         End If
 
@@ -254,18 +261,21 @@ Public Class GamePage
         End If
     End Sub
 
-    Private Sub Game_Over()
-        'ゲームが終了する
-        Game_Stop()
-        '成績処理を加える
-        MessageBox.Show("ゲームオーバー")
+    'ゲームオーバー時のアニメーション処理
+    Private Sub F_Update_Game_Over()
+        If Not Panel_Game_Over.Visible Then
+            Panel_Game_Over.Visible = True
+            Panel_Game_Over.BringToFront()
+        End If
+
+        Dim ftime_from_game_over As Integer = ftime - game_over_time
+        If (ftime_from_game_over > 100) Then
+            form.Open_Top_Page()
+        End If
     End Sub
 
-    Private Sub Game_Clear()
-        'ゲームがクリアされる
-        Game_Stop()
-        '成績処理を加える
-        MessageBox.Show("ゲームクリア！")
+    Private Sub Game_Over()
+        game_over_time = ftime
     End Sub
 
     Private Sub Game_Stop()
@@ -290,10 +300,9 @@ Public Class GamePage
         'ゲームを開始する. 初めの一回のみ. 途中から再開するのは Game_Start
         game_inited = True
 
-        '各ステージを初期化し、引数で与えたステージから開始する
-        Stages = {New Stage1, New Stage2}
+        '引数で与えたステージから開始する
         current_stage_i = start_stage_i
-        Stages(current_stage_i).Start(Me)
+        Stages(start_stage_i).Start(Me)
 
         Game_Start()
     End Sub

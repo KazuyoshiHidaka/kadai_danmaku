@@ -72,40 +72,6 @@ Public Class Stage1
     Inherits Stage
 
     '===========================================================
-    'Override
-    '===========================================================
-
-    Dim _game_page As GamePage
-    Overrides Property Game As GamePage
-        Get
-            Return _game_page
-        End Get
-        Set(value As GamePage)
-            _game_page = value
-        End Set
-    End Property
-
-    Dim _start_ftime As Integer?
-    Overrides Property Start_Ftime As Integer?
-        Get
-            Return _start_ftime
-        End Get
-        Set(value As Integer?)
-            _start_ftime = value
-        End Set
-    End Property
-
-    Dim _cleared_at As Integer?
-    Overrides Property Cleared_At As Integer?
-        Get
-            Return _cleared_at
-        End Get
-        Set(value As Integer?)
-            _cleared_at = value
-        End Set
-    End Property
-
-    '===========================================================
     'ステージ1 固有
     '===========================================================
 
@@ -357,12 +323,6 @@ Public Class Stage1
         Game.Panel_Enemy.Controls.Add(fireball)
     End Sub
 
-End Class
-
-
-Public Class Stage2
-    Inherits Stage
-
     '===========================================================
     'Override
     '===========================================================
@@ -397,15 +357,26 @@ Public Class Stage2
         End Set
     End Property
 
+End Class
+
+
+Public Class Stage2
+    Inherits Stage
+
     '===========================================================
     'ステージ2 固有
     '===========================================================
 
+    '画面下側のダメージ領域
     Dim trench As Trench
 
     'ステージ開始からクリアまでの時間
     Dim duration As Integer = 2500
 
+    '海溝の高さ
+    Dim trench_height As Integer = 50
+
+    '背景色
     Public Shared bg_color As Color = Color.FromArgb(255, 0, 0, 128)
 
     ReadOnly Property Col_Width As Integer
@@ -420,13 +391,22 @@ Public Class Stage2
 
         '見た目を設定
         Game.Panel_Game.BackColor = bg_color
+
+        'Trenchを作成
+        trench = New Trench(Game) With {
+            .Height = 0,
+            .Top = Game.Panel_Game.Height
+        }
+        Game.Panel_Enemy.Controls.Add(trench)
+
+        '初見のプレイヤーがいきなりTrenchに落ちないように、
+        'プレイヤーのTopを調整する
+        Game.Player.Top = trench.Top - Game.Player.Height - trench_height - 10
     End Sub
 
     'ステージ２固有のクリア処理
     Public Overrides Sub Clear()
         MyBase.Clear()
-
-        'Fireballを全て削除
         Game.Panel_Enemy.Controls.Clear()
     End Sub
 
@@ -447,24 +427,20 @@ Public Class Stage2
             enemy.On_F_Update()
         Next
 
-        '指定したフレームごとにFireballを出現させる
+        'Waveの出現開始時刻
         Dim start_spawn_ftime As Integer = 150
+
+        '指定したフレームごとにWaveを出現させる
         Dim spawn_fspan As Integer = 80
 
-        If trench Is Nothing Then
-            'まず、Trenchを作成する
-            trench = New Trench(Game) With {
-                .Height = 0,
-                .Top = Game.Panel_Game.Height
-            }
-            Game.Panel_Enemy.Controls.Add(trench)
-        ElseIf Ftime <= 100 Then
-            'Trenchを徐々に広げる
-            trench.Top = Game.Panel_Game.Height * (1 - Ftime / 1000)
-            trench.Height = (Game.Panel_Game.Height * 0.1) * (Ftime / 100)
+        If Ftime <= 100 Then
+            'まず、Trenchを徐々に広げる
+            trench.Height = trench_height * (Ftime / 100)
+            trench.Top = Game.Panel_Game.Height - trench.Height
         ElseIf Ftime < start_spawn_ftime Then
             'Trenchのアニメーション終了後、休憩時間
 
+            'まずは手動で、固定のWaveを出現させる
         ElseIf Ftime = start_spawn_ftime Then
             Game.Panel_Enemy.Controls.Add(Init_Wave(0, 6))
 
@@ -531,4 +507,122 @@ Public Class Stage2
         }
         Return wave
     End Function
+
+
+    '===========================================================
+    'Override
+    '===========================================================
+
+    Dim _game_page As GamePage
+    Overrides Property Game As GamePage
+        Get
+            Return _game_page
+        End Get
+        Set(value As GamePage)
+            _game_page = value
+        End Set
+    End Property
+
+    Dim _start_ftime As Integer?
+    Overrides Property Start_Ftime As Integer?
+        Get
+            Return _start_ftime
+        End Get
+        Set(value As Integer?)
+            _start_ftime = value
+        End Set
+    End Property
+
+    Dim _cleared_at As Integer?
+    Overrides Property Cleared_At As Integer?
+        Get
+            Return _cleared_at
+        End Get
+        Set(value As Integer?)
+            _cleared_at = value
+        End Set
+    End Property
+End Class
+
+
+Class StageGameClear
+    Inherits Stage
+
+    '===========================================================
+    'StageGameClear固有の処理
+    '===========================================================
+
+    Public Overrides Sub Start(_game_page As GamePage)
+        MyBase.Start(_game_page)
+
+        '見た目を設定
+        Game.Panel_Game.BackColor = Color.FromArgb(255, 0, 0, 0)
+
+        Dim crown As New PictureBox With {
+            .Size = New Size(50, 50),
+            .Image = My.Resources.crown,
+            .SizeMode = PictureBoxSizeMode.StretchImage
+        }
+        Dim label As New Label With {
+            .Text = "Thank you for playing!",
+            .Font = New Font("MS UI Gothic", 20),
+            .ForeColor = Color.White,
+            .Size = New Size(500, 50),
+            .TextAlign = ContentAlignment.MiddleCenter
+        }
+        '中央寄せ
+        crown.Left = Game.Panel_Game.Width / 2 - crown.Width / 2
+        label.Left = Game.Panel_Game.Width / 2 - label.ClientSize.Width / 2
+
+        '配置決め
+        crown.Top = 200
+        label.Top = crown.Bottom + 20
+
+        Game.Panel_Game.Controls.AddRange({crown, label})
+        crown.BringToFront()
+        label.BringToFront()
+        Game.Player.BringToFront()
+    End Sub
+
+    Public Overrides Sub On_F_Update()
+        If Ftime > 400 Then
+            Game.form.thank_you_for_playing = True
+            Game.form.Open_Top_Page()
+        End If
+    End Sub
+
+
+    '===========================================================
+    'Override
+    '===========================================================
+
+    Dim _game_page As GamePage
+    Overrides Property Game As GamePage
+        Get
+            Return _game_page
+        End Get
+        Set(value As GamePage)
+            _game_page = value
+        End Set
+    End Property
+
+    Dim _start_ftime As Integer?
+    Overrides Property Start_Ftime As Integer?
+        Get
+            Return _start_ftime
+        End Get
+        Set(value As Integer?)
+            _start_ftime = value
+        End Set
+    End Property
+
+    Dim _cleared_at As Integer?
+    Overrides Property Cleared_At As Integer?
+        Get
+            Return _cleared_at
+        End Get
+        Set(value As Integer?)
+            _cleared_at = value
+        End Set
+    End Property
 End Class

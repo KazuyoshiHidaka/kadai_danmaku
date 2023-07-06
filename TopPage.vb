@@ -5,6 +5,11 @@
     Public Sub New(_form As Form1)
         InitializeComponent()
         form = _form
+
+        If form.thank_you_for_playing Then
+            Img_Crown.BringToFront()
+            Img_Crown.Visible = True
+        End If
     End Sub
 
     Private Sub Toggle_Btn_Start(sender As Object, e As EventArgs) Handles Btn_Start.MouseEnter, Btn_Start.MouseLeave
@@ -33,10 +38,10 @@
     End Sub
 
     Private Sub Btn_Start_Click(sender As Object, e As EventArgs) Handles Btn_Start.Click
-        form.On_Btn_Start_Clicked(0)
+        form.Opan_Game_Page(0)
     End Sub
 
     Private Sub Btn_Start_2_Click(sender As Object, e As EventArgs) Handles Btn_Start_2.Click
-        form.On_Btn_Start_Clicked(1)
+        form.Opan_Game_Page(1)
     End Sub
 End Class

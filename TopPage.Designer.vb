@@ -25,6 +25,8 @@ Partial Class TopPage
         Title = New Label()
         Btn_Start = New Button()
         Btn_Start_2 = New Button()
+        Img_Crown = New PictureBox()
+        CType(Img_Crown, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' Title
@@ -64,16 +66,29 @@ Partial Class TopPage
         Btn_Start_2.Text = "ステージ２から"
         Btn_Start_2.UseVisualStyleBackColor = False
         ' 
+        ' Img_Crown
+        ' 
+        Img_Crown.Image = My.Resources.Resources.crown
+        Img_Crown.Location = New Point(524, 133)
+        Img_Crown.Name = "Img_Crown"
+        Img_Crown.Size = New Size(50, 50)
+        Img_Crown.SizeMode = PictureBoxSizeMode.StretchImage
+        Img_Crown.TabIndex = 3
+        Img_Crown.TabStop = False
+        Img_Crown.Visible = False
+        ' 
         ' TopPage
         ' 
         AutoScaleDimensions = New SizeF(10F, 25F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.Black
+        Controls.Add(Img_Crown)
         Controls.Add(Btn_Start_2)
         Controls.Add(Btn_Start)
         Controls.Add(Title)
         Name = "TopPage"
         Size = New Size(800, 750)
+        CType(Img_Crown, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -81,4 +96,5 @@ Partial Class TopPage
     Friend WithEvents Title As Label
     Friend WithEvents Btn_Start As Button
     Friend WithEvents Btn_Start_2 As Button
+    Friend WithEvents Img_Crown As PictureBox
 End Class

@@ -182,25 +182,9 @@ End Class
 
 
 
-'ステージ２で出る、ダメージを与える領域
+'ステージ２で出る、ダメージを与える領域. 海溝
 Public Class Trench
     Inherits Enemy
-
-    '======================================
-    'Override
-    '======================================
-
-    'ゲーム画面のインスタンス
-    Private _game As GamePage
-    Overrides Property Game As GamePage
-        Get
-            Return _game
-        End Get
-        Set(value As GamePage)
-            _game = value
-        End Set
-
-    End Property
 
     '======================================
     'Trench 固有
@@ -229,5 +213,21 @@ Public Class Trench
         '移動しない
         '自動で削除もしない
     End Sub
+
+    '======================================
+    'Override
+    '======================================
+
+    'ゲーム画面のインスタンス
+    Private _game As GamePage
+    Overrides Property Game As GamePage
+        Get
+            Return _game
+        End Get
+        Set(value As GamePage)
+            _game = value
+        End Set
+
+    End Property
 
 End Class
