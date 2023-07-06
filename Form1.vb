@@ -24,13 +24,12 @@
     End Function
 
 
-    Public Sub On_Btn_Start_Clicked()
+    'start_stage_i: どのステージから開始するか
+    Public Sub On_Btn_Start_Clicked(start_stage_i As Integer)
         'Top画面でスタートボタンがクリックされた時の処理
         'ゲーム画面へ切り替え
         Me.Controls.Clear()
         Dim game As GamePage = Init_Game_Page()
-        Dim stage As Stage = New Stage1()
-        game.stage = stage
 
         current_page = game
         Me.Controls.Add(game)
@@ -38,7 +37,7 @@
         'ゲーム画面が、キーボード入力を受け取れるように Focus する
         current_page.Focus()
 
-        stage.Start(game)
+        game.Game_Init(start_stage_i)
     End Sub
 End Class
 

@@ -93,6 +93,16 @@ Namespace My.Resources
         '''<summary>
         '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         '''</summary>
+        Friend ReadOnly Property heart() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("heart", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        '''</summary>
         Friend ReadOnly Property plane() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("plane", resourceCulture)
@@ -156,6 +166,26 @@ Namespace My.Resources
         Friend ReadOnly Property player_warning_invincible() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("player_warning_invincible", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        '''</summary>
+        Friend ReadOnly Property wave() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("wave", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        '''</summary>
+        Friend ReadOnly Property wave1() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("wave1", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

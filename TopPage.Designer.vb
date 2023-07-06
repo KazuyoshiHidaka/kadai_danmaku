@@ -24,37 +24,52 @@ Partial Class TopPage
     Private Sub InitializeComponent()
         Title = New Label()
         Btn_Start = New Button()
+        Btn_Start_2 = New Button()
         SuspendLayout()
         ' 
         ' Title
         ' 
         Title.AutoSize = True
-        Title.Font = New Font("Arial Black", 24.0F, FontStyle.Regular, GraphicsUnit.Point)
+        Title.Font = New Font("Arial Black", 24F, FontStyle.Regular, GraphicsUnit.Point)
         Title.ForeColor = Color.White
-        Title.Location = New Point(258, 133)
+        Title.Location = New Point(299, 124)
         Title.Name = "Title"
-        Title.Size = New Size(317, 68)
+        Title.Size = New Size(240, 68)
         Title.TabIndex = 0
-        Title.Text = "Game Title"
+        Title.Text = "避けろ！"
         ' 
         ' Btn_Start
         ' 
         Btn_Start.BackColor = Color.Black
         Btn_Start.Cursor = Cursors.Hand
-        Btn_Start.Font = New Font("Arial Black", 10.0F, FontStyle.Bold, GraphicsUnit.Point)
+        Btn_Start.Font = New Font("Arial Black", 10F, FontStyle.Bold, GraphicsUnit.Point)
         Btn_Start.ForeColor = Color.White
         Btn_Start.Location = New Point(245, 235)
         Btn_Start.Name = "Btn_Start"
         Btn_Start.Size = New Size(343, 59)
         Btn_Start.TabIndex = 1
-        Btn_Start.Text = "スタート"
+        Btn_Start.Text = "ステージ１から"
         Btn_Start.UseVisualStyleBackColor = False
+        ' 
+        ' Btn_Start_2
+        ' 
+        Btn_Start_2.BackColor = Color.Black
+        Btn_Start_2.Cursor = Cursors.Hand
+        Btn_Start_2.Font = New Font("Arial Black", 10F, FontStyle.Bold, GraphicsUnit.Point)
+        Btn_Start_2.ForeColor = Color.White
+        Btn_Start_2.Location = New Point(245, 322)
+        Btn_Start_2.Name = "Btn_Start_2"
+        Btn_Start_2.Size = New Size(343, 59)
+        Btn_Start_2.TabIndex = 2
+        Btn_Start_2.Text = "ステージ２から"
+        Btn_Start_2.UseVisualStyleBackColor = False
         ' 
         ' TopPage
         ' 
-        AutoScaleDimensions = New SizeF(10.0F, 25.0F)
+        AutoScaleDimensions = New SizeF(10F, 25F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.Black
+        Controls.Add(Btn_Start_2)
         Controls.Add(Btn_Start)
         Controls.Add(Title)
         Name = "TopPage"
@@ -65,4 +80,5 @@ Partial Class TopPage
 
     Friend WithEvents Title As Label
     Friend WithEvents Btn_Start As Button
+    Friend WithEvents Btn_Start_2 As Button
 End Class

@@ -12,9 +12,11 @@ Public Class GamePage
 
     '現在進行中のステージ
     'Nullチェック必要!!
-    Public stage As Stage
+    Public current_stage_i As Integer?
 
-    Dim player_speed As Integer = 5
+    Public Stages() As Stage = {New Stage1(), New Stage2()}
+
+    Public player_speed As Integer = 5
     Dim player_hp As Integer = 3
     'プレイヤーが無敵状態か
     ReadOnly Property Player_Invincible() As Boolean
@@ -41,8 +43,6 @@ Public Class GamePage
     Dim game_inited As Boolean = False
     'ゲームが一時停止中か
     Dim game_stopped As Boolean = False
-    'ゲームクリア!
-    Dim game_clear As Boolean = False
 
     Public random As New Random
 
@@ -81,23 +81,40 @@ Public Class GamePage
         End If
 
 
-        If stage IsNot Nothing Then
+        If current_stage_i IsNot Nothing Then
             '進行中のステージがある時:
+            Dim current_stage As Stage = Stages(current_stage_i)
 
-            If stage.Is_Cleared Then
+            If current_stage.Is_Cleared Then
                 'ステージクリアした時
-                Label_Stage_Clear.Visible = True
+                Dim ftime_from_clear As Integer = ftime - current_stage.Cleared_At
 
-                'ステージクリア!!を数フレーム間 表示し、
-                '終わったら次のステージへ
-                If (ftime - stage.Cleared_At) >= 100 Then
+                If ftime_from_clear = 300 Then
+                    'ステージクリア!!をしばらく表示し、
                     Label_Stage_Clear.Visible = False
-                ElseIf (ftime - stage.Cleared_At) >= 150 Then
-
+                    Label_Stage_Clear.SendToBack()
+                ElseIf ftime_from_clear >= 400 Then
+                    '次のステージへ
+                    current_stage_i += 1
+                    Stages(current_stage_i).Start(Me)
                 End If
             Else
+                'ステージがまだ進行中の時
                 '敵の追加, 移動, 削除
-                stage.Update_Enemies()
+                current_stage.On_F_Update()
+                If current_stage.Is_Cleared Then
+                    'ちょうどクリアした時
+                    Label_Stage_Clear.Visible = True
+                    Label_Stage_Clear.BringToFront()
+
+                    If current_stage_i = Stages.Length - 1 Then
+                        '最終ステージの場合、ゲームクリア
+                        current_stage_i = Nothing
+                        Game_Clear()
+                    End If
+                End If
+
+
             End If
         End If
 
@@ -237,21 +254,18 @@ Public Class GamePage
         End If
     End Sub
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Game_Init()
-    End Sub
-
     Private Sub Game_Over()
         'ゲームが終了する
         Game_Stop()
         '成績処理を加える
-        game_inited = False
+        MessageBox.Show("ゲームオーバー")
+    End Sub
 
-        If game_clear Then
-            MessageBox.Show("Game Clear")
-        Else
-            MessageBox.Show("Game Over")
-        End If
+    Private Sub Game_Clear()
+        'ゲームがクリアされる
+        Game_Stop()
+        '成績処理を加える
+        MessageBox.Show("ゲームクリア！")
     End Sub
 
     Private Sub Game_Stop()
@@ -272,9 +286,14 @@ Public Class GamePage
         Game_Start()
     End Sub
 
-    Private Sub Game_Init()
+    Public Sub Game_Init(start_stage_i As Integer)
         'ゲームを開始する. 初めの一回のみ. 途中から再開するのは Game_Start
         game_inited = True
+
+        '各ステージを初期化し、引数で与えたステージから開始する
+        Stages = {New Stage1, New Stage2}
+        current_stage_i = start_stage_i
+        Stages(current_stage_i).Start(Me)
 
         Game_Start()
     End Sub

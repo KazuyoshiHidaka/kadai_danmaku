@@ -33,9 +33,9 @@ Partial Class GamePage
         Panel_Enemy = New Panel()
         Label_Stage_Clear = New Label()
         Main_Timer = New Timer(components)
-        Panel_Pause = New Panel()
-        Label2 = New Label()
         Label1 = New Label()
+        Label2 = New Label()
+        Panel_Pause = New Panel()
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Info.SuspendLayout()
         Panel_Player_HP.SuspendLayout()
@@ -80,7 +80,7 @@ Partial Class GamePage
         ' 
         ' Img_HP_1
         ' 
-        Img_HP_1.Image = My.Resources.Resources.fire_ball
+        Img_HP_1.Image = My.Resources.Resources.heart
         Img_HP_1.InitialImage = My.Resources.Resources.fire_ball
         Img_HP_1.Location = New Point(3, 3)
         Img_HP_1.Name = "Img_HP_1"
@@ -91,7 +91,7 @@ Partial Class GamePage
         ' 
         ' Img_HP_2
         ' 
-        Img_HP_2.Image = My.Resources.Resources.fire_ball
+        Img_HP_2.Image = My.Resources.Resources.heart
         Img_HP_2.Location = New Point(54, 3)
         Img_HP_2.Name = "Img_HP_2"
         Img_HP_2.Size = New Size(45, 47)
@@ -101,7 +101,7 @@ Partial Class GamePage
         ' 
         ' Img_HP_3
         ' 
-        Img_HP_3.Image = My.Resources.Resources.fire_ball
+        Img_HP_3.Image = My.Resources.Resources.heart
         Img_HP_3.Location = New Point(105, 3)
         Img_HP_3.Name = "Img_HP_3"
         Img_HP_3.Size = New Size(45, 47)
@@ -111,10 +111,12 @@ Partial Class GamePage
         ' 
         ' Panel_Game
         ' 
-        Panel_Game.BackColor = Color.Transparent
+        Panel_Game.BackColor = Color.FromArgb(CByte(64), CByte(0), CByte(0))
         Panel_Game.BorderStyle = BorderStyle.FixedSingle
         Panel_Game.Controls.Add(Player)
         Panel_Game.Controls.Add(Panel_Enemy)
+        Panel_Game.Controls.Add(Label_Stage_Clear)
+        Panel_Game.ForeColor = Color.Black
         Panel_Game.Location = New Point(0, 0)
         Panel_Game.Name = "Panel_Game"
         Panel_Game.Size = New Size(800, 600)
@@ -123,19 +125,19 @@ Partial Class GamePage
         ' Panel_Enemy
         ' 
         Panel_Enemy.BackColor = Color.Transparent
-        Panel_Enemy.ForeColor = Color.CornflowerBlue
+        Panel_Enemy.ForeColor = Color.Black
         Panel_Enemy.Location = New Point(0, 0)
         Panel_Enemy.Name = "Panel_Enemy"
         Panel_Enemy.Size = New Size(800, 600)
         Panel_Enemy.TabIndex = 1
-        Panel_Enemy.Visible = False
         ' 
         ' Label_Stage_Clear
         ' 
         Label_Stage_Clear.AutoSize = True
+        Label_Stage_Clear.BackColor = Color.Transparent
         Label_Stage_Clear.Font = New Font("Yu Gothic UI", 18F, FontStyle.Bold, GraphicsUnit.Point)
         Label_Stage_Clear.ForeColor = Color.White
-        Label_Stage_Clear.Location = New Point(284, 302)
+        Label_Stage_Clear.Location = New Point(286, 150)
         Label_Stage_Clear.Name = "Label_Stage_Clear"
         Label_Stage_Clear.Size = New Size(249, 48)
         Label_Stage_Clear.TabIndex = 0
@@ -146,28 +148,6 @@ Partial Class GamePage
         ' 
         Main_Timer.Enabled = True
         Main_Timer.Interval = 13
-        ' 
-        ' Panel_Pause
-        ' 
-        Panel_Pause.BackColor = SystemColors.WindowFrame
-        Panel_Pause.Controls.Add(Label2)
-        Panel_Pause.Controls.Add(Label1)
-        Panel_Pause.Location = New Point(0, 0)
-        Panel_Pause.Name = "Panel_Pause"
-        Panel_Pause.Size = New Size(800, 750)
-        Panel_Pause.TabIndex = 0
-        ' 
-        ' Label2
-        ' 
-        Label2.AutoSize = True
-        Label2.BackColor = Color.Transparent
-        Label2.Font = New Font("Yu Gothic UI", 12F, FontStyle.Regular, GraphicsUnit.Point)
-        Label2.ForeColor = Color.White
-        Label2.Location = New Point(338, 262)
-        Label2.Name = "Label2"
-        Label2.Size = New Size(147, 32)
-        Label2.TabIndex = 1
-        Label2.Text = "Escキーで再開"
         ' 
         ' Label1
         ' 
@@ -181,6 +161,28 @@ Partial Class GamePage
         Label1.TabIndex = 0
         Label1.Text = "ポーズ"
         ' 
+        ' Label2
+        ' 
+        Label2.AutoSize = True
+        Label2.BackColor = Color.Transparent
+        Label2.Font = New Font("Yu Gothic UI", 12F, FontStyle.Regular, GraphicsUnit.Point)
+        Label2.ForeColor = Color.White
+        Label2.Location = New Point(338, 262)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(147, 32)
+        Label2.TabIndex = 1
+        Label2.Text = "Escキーで再開"
+        ' 
+        ' Panel_Pause
+        ' 
+        Panel_Pause.BackColor = SystemColors.WindowFrame
+        Panel_Pause.Controls.Add(Label2)
+        Panel_Pause.Controls.Add(Label1)
+        Panel_Pause.Location = New Point(0, 0)
+        Panel_Pause.Name = "Panel_Pause"
+        Panel_Pause.Size = New Size(800, 750)
+        Panel_Pause.TabIndex = 0
+        ' 
         ' GamePage
         ' 
         AutoScaleDimensions = New SizeF(10F, 25F)
@@ -188,7 +190,6 @@ Partial Class GamePage
         Controls.Add(Panel_Game)
         Controls.Add(Panel_Info)
         Controls.Add(Panel_Pause)
-        Controls.Add(Label_Stage_Clear)
         Name = "GamePage"
         Size = New Size(800, 750)
         CType(Player, ComponentModel.ISupportInitialize).EndInit()
@@ -199,10 +200,10 @@ Partial Class GamePage
         CType(Img_HP_2, ComponentModel.ISupportInitialize).EndInit()
         CType(Img_HP_3, ComponentModel.ISupportInitialize).EndInit()
         Panel_Game.ResumeLayout(False)
+        Panel_Game.PerformLayout()
         Panel_Pause.ResumeLayout(False)
         Panel_Pause.PerformLayout()
         ResumeLayout(False)
-        PerformLayout()
     End Sub
     Friend WithEvents Player As PictureBox
     Friend WithEvents Panel_Info As Panel
@@ -213,8 +214,8 @@ Partial Class GamePage
     Friend WithEvents Panel_Game As Panel
     Friend WithEvents Panel_Enemy As Panel
     Friend WithEvents Main_Timer As Timer
-    Friend WithEvents Panel_Pause As Panel
-    Friend WithEvents Label2 As Label
-    Friend WithEvents Label1 As Label
     Friend WithEvents Label_Stage_Clear As Label
+    Friend WithEvents Label1 As Label
+    Friend WithEvents Label2 As Label
+    Friend WithEvents Panel_Pause As Panel
 End Class
