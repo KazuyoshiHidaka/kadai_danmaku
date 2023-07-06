@@ -113,7 +113,7 @@ Public Class Stage1
     Dim fireball_speed As Integer = 6
 
     '開始から中間イベントまでの時間
-    Dim ftime_to_mid As Integer = 100
+    Dim ftime_to_mid As Integer = 1000
 
     Public Shared bg_color As Color = Color.FromArgb(255, 64, 0, 0)
 
