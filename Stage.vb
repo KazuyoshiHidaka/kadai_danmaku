@@ -96,6 +96,11 @@ Public Class Stage1
 
         '見た目を設定
         Game.Panel_Game.BackColor = bg_color
+
+        '中間イベントまでのプログレスバーの設定
+        Game.ProgressBar_Stage_Time.Maximum = ftime_to_mid
+        Game.ProgressBar_Stage_Time.Value = ftime_to_mid
+        Game.ProgressBar_Stage_Time.Minimum = 0
     End Sub
 
     'ステージ１固有のクリア処理
@@ -104,6 +109,12 @@ Public Class Stage1
 
         'Fireballを全て削除
         Game.Panel_Enemy.Controls.Clear()
+    End Sub
+
+    '1フレームごとのプログレスバーの更新
+    Public Sub F_Update_ProgressBar()
+        Game.ProgressBar_Stage_Time.Value =
+            Math.Max(Game.ProgressBar_Stage_Time.Value - 1, 0)
     End Sub
 
 
@@ -120,6 +131,9 @@ Public Class Stage1
             Dim enemy As Enemy = DirectCast(_enemy, Enemy)
             enemy.On_F_Update()
         Next
+
+        '残り時間を示すプログレスバーの更新
+        F_Update_ProgressBar()
 
         'ステージ1の流れ
         '
@@ -138,6 +152,12 @@ Public Class Stage1
 
             '中間イベントが始まった時刻
             Dim time = Ftime - ftime_to_mid
+
+            If time = 0 Then
+                '中間イベント中のプログレスバー初期化
+                Game.ProgressBar_Stage_Time.Maximum = spawn_fspan * 45
+                Game.ProgressBar_Stage_Time.Value = spawn_fspan * 45
+            End If
 
             'まず、左から右に階段状で生成 ->
             If time = 0 Then
@@ -392,6 +412,11 @@ Public Class Stage2
         '見た目を設定
         Game.Panel_Game.BackColor = bg_color
 
+        '残り時間を示すプログレスバーを初期化
+        Game.ProgressBar_Stage_Time.Maximum = duration
+        Game.ProgressBar_Stage_Time.Value = duration
+        Game.ProgressBar_Stage_Time.Minimum = 0
+
         'Trenchを作成
         trench = New Trench(Game) With {
             .Height = 0,
@@ -410,6 +435,12 @@ Public Class Stage2
         Game.Panel_Enemy.Controls.Clear()
     End Sub
 
+    '1フレームごとのプログレスバーの更新
+    Public Sub F_Update_ProgressBar()
+        Game.ProgressBar_Stage_Time.Value =
+            Math.Max(Game.ProgressBar_Stage_Time.Value - 1, 0)
+    End Sub
+
     Public Overrides Sub On_F_Update()
         If Not Is_Started Or Is_Cleared Then
             Return
@@ -426,6 +457,12 @@ Public Class Stage2
             Dim enemy As Enemy = DirectCast(_enemy, Enemy)
             enemy.On_F_Update()
         Next
+
+        'プログレスバーの更新
+        F_Update_ProgressBar()
+
+
+        '========== 残り時間に応じて、敵を作成 ==========
 
         'Waveの出現開始時刻
         Dim start_spawn_ftime As Integer = 150

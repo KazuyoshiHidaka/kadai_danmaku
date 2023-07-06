@@ -25,6 +25,7 @@ Partial Class GamePage
         components = New ComponentModel.Container()
         Player = New PictureBox()
         Panel_Info = New Panel()
+        ProgressBar_Stage_Time = New ProgressBar()
         Panel_Player_HP = New FlowLayoutPanel()
         Img_HP_1 = New PictureBox()
         Img_HP_2 = New PictureBox()
@@ -64,11 +65,20 @@ Partial Class GamePage
         ' 
         ' Panel_Info
         ' 
+        Panel_Info.Controls.Add(ProgressBar_Stage_Time)
         Panel_Info.Controls.Add(Panel_Player_HP)
         Panel_Info.Location = New Point(0, 600)
         Panel_Info.Name = "Panel_Info"
         Panel_Info.Size = New Size(800, 150)
         Panel_Info.TabIndex = 2
+        ' 
+        ' ProgressBar_Stage_Time
+        ' 
+        ProgressBar_Stage_Time.Location = New Point(538, 53)
+        ProgressBar_Stage_Time.Name = "ProgressBar_Stage_Time"
+        ProgressBar_Stage_Time.Size = New Size(221, 34)
+        ProgressBar_Stage_Time.TabIndex = 1
+        ProgressBar_Stage_Time.Value = 50
         ' 
         ' Panel_Player_HP
         ' 
@@ -262,4 +272,5 @@ Partial Class GamePage
     Friend WithEvents Panel_Game_Over As Panel
     Friend WithEvents Label3 As Label
     Friend WithEvents Label5 As Label
+    Friend WithEvents ProgressBar_Stage_Time As ProgressBar
 End Class
