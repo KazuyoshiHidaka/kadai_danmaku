@@ -1,5 +1,6 @@
 ﻿
 Imports System.Media
+Imports System.Numerics
 
 Public MustInherit Class Stage
 
@@ -75,12 +76,14 @@ Public Class Stage1
     'ステージ1 固有
     '===========================================================
 
-    'Fireballの速度
-    Dim fireball_speed As Integer = 6
+    ReadOnly Property Fireball_Speed As Integer 'Fireballの速度
+        Get
+            Return Game.Rh(10)
+        End Get
+    End Property
+    Dim ftime_to_mid As Integer = 1000 '開始から中間イベントまでの時間
 
-    '開始から中間イベントまでの時間
-    Dim ftime_to_mid As Integer = 1000
-
+    'TopPageのステージ選択ボタンの背景色にも使われる
     Public Shared bg_color As Color = Color.FromArgb(255, 64, 0, 0)
 
     '1つの Column の横幅
@@ -147,11 +150,8 @@ Public Class Stage1
         If Ftime >= ftime_to_mid Then
             '中間イベント
 
-            '中間より前とは異なる間隔でFireballを生成する
-            Dim spawn_fspan = 19
-
-            '中間イベントが始まった時刻
-            Dim time = Ftime - ftime_to_mid
+            Dim spawn_fspan = 19 '中間より前とは異なる間隔でFireballを生成するため
+            Dim time = Ftime - ftime_to_mid '中間イベントが始まった時刻
 
             If time = 0 Then
                 '中間イベント中のプログレスバー初期化
@@ -254,9 +254,10 @@ Public Class Stage1
             End If
 
         Else
+            '中間イベントより前のとき
+
             Dim spawn_fspan As Integer = 30
 
-            '中間イベントより前のとき
             If Ftime > 0 And Ftime Mod spawn_fspan * 8 = 0 Then
                 '8個のうち1つは強い玉.
                 '一番最初に出さないように Ftime > 0 の時のみ.
@@ -265,7 +266,6 @@ Public Class Stage1
             ElseIf Ftime > 0 And Ftime Mod spawn_fspan * 3 = 0 Then
                 ''3個のうち1つは中玉.
                 '一番最初に出さないように Ftime > 0 の時のみ.
-
                 Spawn_Fireball_lv2()
 
             ElseIf Ftime Mod spawn_fspan = 0 Then
@@ -295,12 +295,12 @@ Public Class Stage1
         Dim fireball As New Fireball(Game) With {
             .Size = New Size(width, width),
             .Location = New Point(Col_Width() * column, 0),
-            .speed = fireball_speed
+            .speed = Fireball_Speed
         }
         Return fireball
     End Function
 
-    'Init_Fireball_In_Colした後、画面に追加する
+    '毎度 Init -> Controls.Add するのが面倒なので、一つにまとめる
     Private Sub Spawn_Fireball_In_Col(column As Integer)
         Dim fireball As Fireball = Init_Fireball_In_Col(column)
         Game.Panel_Enemy.Controls.Add(fireball)
@@ -313,7 +313,7 @@ Public Class Stage1
         Dim col = Math.Floor(player_center / Col_Width())
 
         Dim fireball As Fireball = Init_Fireball_In_Col(col)
-        fireball.speed = fireball_speed
+        fireball.speed = Fireball_Speed
         Game.Panel_Enemy.Controls.Add(fireball)
     End Sub
 
@@ -321,7 +321,7 @@ Public Class Stage1
         Dim fireball As New Fireball(Game) With {
                 .atk = 2,
                 .Size = New Size(Col_Width * 1.5, Col_Width * 1.5),
-                .speed = fireball_speed
+                .speed = Fireball_Speed
             }
         'プレイヤーの真正面に出現させる
         Dim player_center = Game.Player.Left + Game.Player.Width / 2
@@ -334,7 +334,7 @@ Public Class Stage1
         Dim fireball As New Fireball(Game) With {
                 .atk = 3,
                 .Size = New Size(Col_Width * 5, Col_Width * 5),
-                .speed = fireball_speed
+                .speed = Fireball_Speed
             }
         'プレイヤーの真正面に出現させる
         Dim player_center = Game.Player.Left + Game.Player.Width / 2
@@ -394,7 +394,13 @@ Public Class Stage2
     Dim duration As Integer = 2500
 
     '海溝の高さ
-    Dim trench_height As Integer = 50
+    'Dim trench_height As Integer = 50
+
+    ReadOnly Property Trench_Height As Integer
+        Get
+            Return Game.Rh(100)
+        End Get
+    End Property
 
     '背景色
     Public Shared bg_color As Color = Color.FromArgb(255, 0, 0, 128)
@@ -417,16 +423,16 @@ Public Class Stage2
         Game.ProgressBar_Stage_Time.Value = duration
         Game.ProgressBar_Stage_Time.Minimum = 0
 
-        'Trenchを作成
+        'ステージの初期オブジェクトを作成
         trench = New Trench(Game) With {
-            .Height = 0,
+            .Height = 0, 'アニメーションで徐々に高さを増やしていく
             .Top = Game.Panel_Game.Height
         }
         Game.Panel_Enemy.Controls.Add(trench)
 
         '初見のプレイヤーがいきなりTrenchに落ちないように、
         'プレイヤーのTopを調整する
-        Game.Player.Top = trench.Top - Game.Player.Height - trench_height - 10
+        Game.Player.Top = trench.Top - Game.Player.Height - Trench_Height - Game.Rh(10)
     End Sub
 
     'ステージ２固有のクリア処理
@@ -479,40 +485,31 @@ Public Class Stage2
 
             'まずは手動で、固定のWaveを出現させる
         ElseIf Ftime = start_spawn_ftime Then
-            Game.Panel_Enemy.Controls.Add(Init_Wave(0, 6))
+            Spawn_Wave(0, 6)
 
         ElseIf Ftime = start_spawn_ftime + spawn_fspan Then
-            Game.Panel_Enemy.Controls.Add(Init_Wave(0, 3))
-            Game.Panel_Enemy.Controls.Add(Init_Wave(5, 8))
+            Spawn_Wave(0, 3)
+            Spawn_Wave(5, 8)
 
         ElseIf Ftime = start_spawn_ftime + spawn_fspan * 2 Then
-            Game.Panel_Enemy.Controls.Add(Init_Wave(2, 8))
+            Spawn_Wave(2, 8)
 
         ElseIf Ftime = start_spawn_ftime + spawn_fspan * 3 Then
-            Game.Panel_Enemy.Controls.Add(Init_Horizontal_Wave())
+            Spawn_Horizontal_Wave()
 
         ElseIf Ftime > start_spawn_ftime + spawn_fspan * 3 And Ftime < duration Then
             '以降は、ランダムでWaveを出現させる
             If Ftime Mod spawn_fspan * 5 = 0 Then
-                Dim wave As HorizontalWave
-                '速/遅のHorizontalWave
-                wave = Init_Horizontal_Wave()
-                wave.speed = 2 + Game.random.Next(5)
-                Game.Panel_Enemy.Controls.Add(wave)
+                Spawn_Horizontal_Wave()
 
             ElseIf Ftime Mod spawn_fspan * 2 = 0 Then
-                '速/遅の中央波
-                Dim wave As Wave = Init_Wave(Game.random.Next(3), Game.random.Next(3) + 5)
-                wave.speed = 3 + Game.random.Next(2)
-                Game.Panel_Enemy.Controls.Add(wave)
+                '中央波. 出現範囲はランダム
+                Spawn_Wave(Game.random.Next(3), Game.random.Next(3) + 5)
 
             ElseIf Ftime Mod spawn_fspan = 0 Then
-                '速/遅の左右波
-                Dim wave_l As Wave = Init_Wave(0, Game.random.Next(2) + 2)
-                wave_l.speed = 3 + Game.random.Next(2)
-                Dim wave_r As Wave = Init_Wave(Game.random.Next(2) + 5, 8)
-                wave_r.speed = 3 + Game.random.Next(2)
-                Game.Panel_Enemy.Controls.AddRange({wave_l, wave_r})
+                '左右波. 出現範囲はランダム
+                Spawn_Wave(0, Game.random.Next(2) + 2)
+                Spawn_Wave(Game.random.Next(2) + 5, 8)
             End If
         End If
 
@@ -527,9 +524,9 @@ Public Class Stage2
     '_to: 0 ～ 8
     Private Function Init_Wave(_from As Integer, _to As Integer) As Wave
         Dim wave As New Wave(Game) With {
-            .Size = New Size(Col_Width() * (_to - _from + 1), 80),
+            .Size = New Size(Col_Width() * (_to - _from + 1), Game.Panel_Game.Height * 0.13),
             .Location = New Point(Col_Width() * _from, 0),
-            .speed = 4
+            .speed = Game.Rh(5 + Game.random.Next(3)) '速/遅
         }
         Return wave
     End Function
@@ -537,13 +534,24 @@ Public Class Stage2
     Private Function Init_Horizontal_Wave() As HorizontalWave
         '海溝のぎりぎり上で止まるように、removal_bottomを設定する
         Dim wave As New HorizontalWave(Game) With {
-            .Height = 80,
+            .Height = Game.Panel_Game.Height * 0.13,
             .Location = New Point(0, 0),
-            .speed = 3,
-            .removal_bottom = Game.Panel_Game.Height - trench.Height - Game.Player.Height - 10
+            .speed = Game.Rh(6 + Game.random.Next(4)), '速/遅
+            .removal_bottom = Game.Panel_Game.Height - trench.Height - Game.Player.Height - Game.Rh(10)
         }
         Return wave
     End Function
+
+    '毎度 Init -> Add するのが面倒なので、一つにまとめる
+    Private Sub Spawn_Wave(_from As Integer, _to As Integer)
+        Dim wave As Wave = Init_Wave(_from, _to)
+        Game.Panel_Enemy.Controls.Add(wave)
+    End Sub
+
+    Private Sub Spawn_Horizontal_Wave()
+        Dim wave As HorizontalWave = Init_Horizontal_Wave()
+        Game.Panel_Enemy.Controls.Add(wave)
+    End Sub
 
 
     '===========================================================
@@ -596,7 +604,7 @@ Class StageGameClear
         Game.Panel_Game.BackColor = Color.FromArgb(255, 0, 0, 0)
 
         Dim crown As New PictureBox With {
-            .Size = New Size(50, 50),
+            .Size = New Size(Game.Rw(75), Game.Rw(75)), '正方形
             .Image = My.Resources.crown,
             .SizeMode = PictureBoxSizeMode.StretchImage
         }
@@ -604,7 +612,7 @@ Class StageGameClear
             .Text = "Thank you for playing!",
             .Font = New Font("MS UI Gothic", 20),
             .ForeColor = Color.White,
-            .Size = New Size(500, 50),
+            .Size = New Size(Game.Rw(700), Game.Rh(100)),
             .TextAlign = ContentAlignment.MiddleCenter
         }
         '中央寄せ
@@ -612,8 +620,8 @@ Class StageGameClear
         label.Left = Game.Panel_Game.Width / 2 - label.ClientSize.Width / 2
 
         '配置決め
-        crown.Top = 200
-        label.Top = crown.Bottom + 20
+        crown.Top = Game.Rh(300)
+        label.Top = crown.Bottom + Game.Rh(30)
 
         Game.Panel_Game.Controls.AddRange({crown, label})
         crown.BringToFront()

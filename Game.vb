@@ -4,36 +4,48 @@ Imports System.ComponentModel
 
 'ゲーム画面
 Public Class GamePage
-    'フォームのインスタンス
+
+    '親フォーム. TopPageへの遷移に使う
     Public form As Form1
 
     'ゲーム開始からの経過フレーム時間
     Public ftime As Integer = 0
 
-    '現在進行中のステージ
-    'Nullチェック必要!!
+    '現在進行中のステージ. 無い場合もある
     Public current_stage_i As Integer?
 
-    Public Stages() As Stage = {New Stage1(), New Stage2(), New StageGameClear()}
+    '全ステージのリスト. ここでステージを登録する
+    Public Stages() As Stage = {
+        New Stage1(), New Stage2(), New StageGameClear()
+    }
 
-    Public player_speed As Integer = 5
+    'プレイヤーのHP
     Dim player_hp As Integer = 3
+
+    'プレイヤーの移動速度
+    ReadOnly Property Player_Speed As Integer
+        Get
+            Return Rh(8)
+        End Get
+    End Property
+
     'プレイヤーが無敵状態か
     ReadOnly Property Player_Invincible() As Boolean
         Get
             Return player_invincible_to IsNot Nothing
         End Get
     End Property
+
     'プレイヤーがダメージを受けた直後の無敵フレーム時間
     Dim player_damaged_invincible_fspan As Integer = 100
-    'このカウントが一定の値になったとき、プレイヤーの無敵状態を解除する
-    Dim player_invincible_tick_count As Integer = 0
-    'プレイヤー無敵時間の終了時刻
-    'Nothingの場合、無敵ではない状態
+
+    'プレイヤー無敵時間の終了時刻. Nothingの場合、無敵ではない
     Dim player_invincible_to As Integer?
-    'プレイヤー無敵時間の開始時刻
+
+    'プレイヤー無敵時間の開始時刻. 無敵状態のアニメーションに使う
     Dim player_invincible_from As Integer?
 
+    'プレイヤーの移動に使う
     Dim key_up_pressed As Boolean = False
     Dim key_right_pressed As Boolean = False
     Dim key_left_pressed As Boolean = False
@@ -41,13 +53,15 @@ Public Class GamePage
 
     'ゲームが開始したか
     Dim game_inited As Boolean = False
+
     'ゲームが一時停止中か
     Dim game_stopped As Boolean = False
-    'ゲームオーバーした時の時刻
-    'Nothingの場合、ゲームオーバーではない
+
+    'ゲームオーバーした時の時刻. Nothingの場合、ゲームオーバーではない
     'ゲームオーバー時のアニメーションに使う
     Dim game_over_time As Integer?
 
+    '乱数生成用
     Public random As New Random
 
     Public Sub New(_form As Form1)
@@ -70,25 +84,25 @@ Public Class GamePage
         'キー同時押しに対応するために、別個にIf文を使う
         If key_up_pressed Then
             Player.Top = Math.Max(
-                Player.Top - player_speed,
+                Player.Top - Player_Speed,
                 0 '上端より上に行かないように
             )
         End If
         If key_right_pressed Then
             Player.Left = Math.Min(
-                Player.Left + player_speed,
+                Player.Left + Player_Speed,
                 Panel_Game.Width - Player.Width '右端より右に行かないように
             )
         End If
         If key_left_pressed Then
             Player.Left = Math.Max(
-                Player.Left - player_speed,
+                Player.Left - Player_Speed,
                 0 '左端より左に行かないように
             )
         End If
         If key_down_pressed Then
             Player.Top = Math.Min(
-                Player.Top + player_speed,
+                Player.Top + Player_Speed,
                 Panel_Game.Height - Player.Height '下端より下に行かないように
             )
         End If
@@ -151,21 +165,19 @@ Public Class GamePage
         '敵からダメージを負ったりしなくなる
 
         If Player_Invincible Then
-            'プレイヤー無敵中の場合
             If player_invincible_to < ftime Then
-                '無敵時間を過ぎた場合、解除
                 Player_Invincible_Stop()
 
                 '点滅アニメーションにより、
                 'Visible: Falseの状態で無敵時間を過ぎてしまった場合の対策
                 Player.Visible = True
             Else
-                '無敵時間内の時
                 'プレイヤーを点滅させ、無敵状態であることを示す
 
                 '無敵状態の経過時間
-                Dim elapsed_time As Integer = ftime - player_invincible_from
-                If elapsed_time Mod 5 = 0 Then
+                Dim elapsed_ftime As Integer = ftime - player_invincible_from
+
+                If elapsed_ftime Mod 5 = 0 Then
                     Player.Visible = Not Player.Visible
                 End If
             End If
@@ -313,5 +325,24 @@ Public Class GamePage
         Main_Timer.Enabled = True
         game_stopped = False
     End Sub
+
+    'Relative height.
+    'ゲーム画面に対する高さの割合を与え、高さを計算する
+    'あらゆる高さの指定にこの関数を使うことで、レスポンシブ対応ができる
+    Public Function Rh(
+        permil As Double '千分率
+    ) As Integer
+        Return Panel_Game.Height * permil / 1000
+    End Function
+
+    'Relative width.
+    'ゲーム画面に対する幅の割合を与え、幅を計算する
+    'あらゆる幅の指定にこの関数を使うことで、レスポンシブ対応ができる
+    Public Function Rw(
+        permil As Double '千分率
+    ) As Integer
+        Return Panel_Game.Width * permil / 1000
+    End Function
+
 End Class
 
