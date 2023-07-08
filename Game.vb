@@ -1,6 +1,7 @@
 ﻿Imports System.Numerics
 Imports System.Threading
 Imports System.ComponentModel
+Imports System.Media
 
 'ゲーム画面
 Public Class GamePage
@@ -300,6 +301,7 @@ Public Class GamePage
     Private Sub Game_Over()
         Game_Stop()
         is_game_over = True
+        form.game_bgm_player.Stop()
         'ゲームオーバー時のアニメーション処理を開始する
         Timer_Game_Over.Interval = 100
         Timer_Game_Over.Enabled = True
@@ -316,11 +318,13 @@ Public Class GamePage
         'ゲームを一時停止し、ポーズ画面を開く
         Game_Stop()
         Panel_Pause.BringToFront()
+        form.game_bgm_player.Stop()
     End Sub
     Private Sub Close_Panel_Pause()
         'ポーズ画面を閉じ、ゲームを再開する
         Panel_Pause.SendToBack()
         Game_Start()
+        form.game_bgm_player.PlayLooping()
     End Sub
 
     Public Sub Game_Init(start_stage_i As Integer)
@@ -330,6 +334,10 @@ Public Class GamePage
         '引数で与えたステージから開始する
         current_stage_i = start_stage_i
         Stages(start_stage_i).Start(Me)
+
+        '曲
+        'form.game_bgm_player.IsPlaying
+        'form.game_bgm_player.PlayLooping()
 
         Game_Start()
     End Sub

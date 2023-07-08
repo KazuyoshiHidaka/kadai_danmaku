@@ -1,9 +1,15 @@
-﻿Public Class Form1
+﻿Imports System.Media
+
+Public Class Form1
 
     '現在フォームに表示されているページ
     Dim current_page As Control
 
     Public thank_you_for_playing As Boolean = False
+
+    Public game_bgm_player As New SoundPlayer With {
+        .Stream = My.Resources.game_bgm
+    }
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'Top画面からスタート
@@ -54,6 +60,9 @@
         Me.Controls.Add(top)
         current_page?.Dispose()
         current_page = top
+
+        '曲
+        game_bgm_player.PlayLooping()
     End Sub
 End Class
 

@@ -627,6 +627,9 @@ Class StageGameClear
         crown.BringToFront()
         label.BringToFront()
         Game.Player.BringToFront()
+
+        'GameBGMを止める
+        Game.form.game_bgm_player.Stop()
     End Sub
 
     Public Overrides Sub On_F_Update()
