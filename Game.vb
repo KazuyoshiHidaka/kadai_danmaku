@@ -11,8 +11,16 @@ Public Class GamePage
     'ゲーム開始からの経過フレーム時間
     Public ftime As Integer = 0
 
-    '現在進行中のステージ. 無い場合もある
-    Public current_stage_i As Integer?
+    '現在進行中のステージの番号
+    Public current_stage_i As Integer
+
+    '現在進行中のステージ
+    Public ReadOnly Property Current_Stage As Stage
+        Get
+            Return Stages(current_stage_i)
+        End Get
+    End Property
+
 
     '全ステージのリスト. ここでステージを登録する
     Public Stages() As Stage = {
@@ -57,9 +65,12 @@ Public Class GamePage
     'ゲームが一時停止中か
     Dim game_stopped As Boolean = False
 
-    'ゲームオーバーした時の時刻. Nothingの場合、ゲームオーバーではない
-    'ゲームオーバー時のアニメーションに使う
-    Dim game_over_time As Integer?
+    'ゲームオーバーしたか
+    Dim is_game_over As Boolean = False
+
+    'ゲームオーバー後のフレーム時間
+    'ゲームオーバー後のアニメーションに使う
+    Dim ftime_game_over As Integer = 0
 
     '乱数生成用
     Public random As New Random
@@ -70,15 +81,6 @@ Public Class GamePage
     End Sub
 
     Private Sub Main_Timer_Tick(sender As Object, e As EventArgs) Handles Main_Timer.Tick
-
-        If game_over_time IsNot Nothing Then
-            'ゲームオーバーした時
-            F_Update_Game_Over()
-            ftime += 1
-            Return
-        End If
-
-        '======== ゲーム進行中 ==================================
 
         '=== Player移動
         'キー同時押しに対応するために、別個にIf文を使う
@@ -108,52 +110,47 @@ Public Class GamePage
         End If
 
 
-        If current_stage_i IsNot Nothing Then
-            '進行中のステージがある時:
-            Dim current_stage As Stage = Stages(current_stage_i)
+        If Current_Stage.Is_Cleared Then
+            'ステージクリアした時
+            Dim ftime_from_clear As Integer = ftime - Current_Stage.Cleared_At
 
-            If current_stage.Is_Cleared Then
-                'ステージクリアした時
-                Dim ftime_from_clear As Integer = ftime - current_stage.Cleared_At
+            If ftime_from_clear < 300 And Label_Stage_Clear.Visible = False Then
+                Label_Stage_Clear.Visible = True
+                Label_Stage_Clear.BringToFront()
 
-                If ftime_from_clear = 300 Then
-                    'ステージクリア!!をしばらく表示し、
-                    Label_Stage_Clear.Visible = False
-                    Label_Stage_Clear.SendToBack()
-                ElseIf ftime_from_clear >= 400 Then
-                    '次のステージへ
-                    current_stage_i += 1
-                    Stages(current_stage_i).Start(Me)
+            ElseIf ftime_from_clear = 300 Then
+                'ステージクリア!!をしばらく表示し、
+                Label_Stage_Clear.Visible = False
+                Label_Stage_Clear.SendToBack()
+            ElseIf ftime_from_clear >= 400 Then
+                '次のステージへ
+                current_stage_i += 1
+                Stages(current_stage_i).Start(Me)
 
-                    'ゲームクリア処理は、StageGameClearで行う
-                End If
-            Else
-                'ステージがまだ進行中の時
-                '敵の追加, 移動, 削除
-                current_stage.On_F_Update()
-                If current_stage.Is_Cleared Then
-                    'ちょうどクリアした時
-                    Label_Stage_Clear.Visible = True
-                    Label_Stage_Clear.BringToFront()
-                End If
+                'ゲームクリア処理は、StageGameClearで行う
             End If
-        End If
+        Else
+            '=== ステージが進行中の時 ===
 
-        'プレイヤーと敵との衝突処理
-        '
-        '今は、
-        '- 無敵時間中は敵と衝突しても何も起こらない
-        '- 衝突判定は、全て長方形同士の重なりチェックで対応できる
-        'という前提で成り立つ記述をしている
-        '
-        If Not Player_Invincible Then
-            For Each _enemy In Panel_Enemy.Controls
-                Dim enemy As Enemy = DirectCast(_enemy, Enemy)
+            '敵の追加, 移動, 削除
+            Current_Stage.On_F_Update()
 
-                If Player.Bounds.IntersectsWith(enemy.Bounds) Then
-                    enemy.On_Player_Collision()
-                End If
-            Next
+
+            'プレイヤーと敵との衝突処理
+            '
+            '今は、
+            '- 無敵時間中は敵と衝突しても何も起こらない
+            '- 衝突判定は、全て長方形同士の重なりチェックで対応できる
+            'という前提で成り立つ記述をしている
+            If Not Player_Invincible Then
+                For Each _enemy In Panel_Enemy.Controls
+                    Dim enemy As Enemy = DirectCast(_enemy, Enemy)
+
+                    If Player.Bounds.IntersectsWith(enemy.Bounds) Then
+                        enemy.On_Player_Collision()
+                    End If
+                Next
+            End If
         End If
 
 
@@ -177,7 +174,9 @@ Public Class GamePage
                 '無敵状態の経過時間
                 Dim elapsed_ftime As Integer = ftime - player_invincible_from
 
-                If elapsed_ftime Mod 5 = 0 Then
+                'ゲームオーバー直後は別のアニメーションを行うため、
+                '点滅アニメーションを行わない
+                If Not is_game_over And elapsed_ftime Mod 5 = 0 Then
                     Player.Visible = Not Player.Visible
                 End If
             End If
@@ -247,7 +246,7 @@ Public Class GamePage
             key_left_pressed = True
         ElseIf keyData = Keys.Down Then
             key_down_pressed = True
-        ElseIf game_inited And keyData = Keys.Escape Then
+        ElseIf game_inited And Not is_game_over And keyData = Keys.Escape Then
             'ポーズ画面を 開く/閉じる
             If game_stopped Then
                 Close_Panel_Pause()
@@ -274,20 +273,36 @@ Public Class GamePage
     End Sub
 
     'ゲームオーバー時のアニメーション処理
-    Private Sub F_Update_Game_Over()
-        If Not Panel_Game_Over.Visible Then
+    Private Sub F_Update_Game_Over() Handles Timer_Game_Over.Tick
+        If ftime_game_over < 10 Then
+            'ゲームオーバー直後の、世界の動きが止まるところ
+
+        ElseIf ftime_game_over = 10 Then
+
+            'プレイヤーを消す
+            Player.Visible = False
+        ElseIf ftime_game_over < 30 Then
+            'プレイヤーを消した後の、世界の動きが止まるところ
+
+        ElseIf ftime_game_over = 30 Then
+            'ゲームオーバー画面を表示する
             Panel_Game_Over.Visible = True
             Panel_Game_Over.BringToFront()
-        End If
 
-        Dim ftime_from_game_over As Integer = ftime - game_over_time
-        If (ftime_from_game_over > 150) Then
+        ElseIf (ftime_game_over >= 60) Then
+            Timer_Game_Over.Enabled = False
             form.Open_Top_Page()
         End If
+
+        ftime_game_over += 1
     End Sub
 
     Private Sub Game_Over()
-        game_over_time = ftime
+        Game_Stop()
+        is_game_over = True
+        'ゲームオーバー時のアニメーション処理を開始する
+        Timer_Game_Over.Interval = 100
+        Timer_Game_Over.Enabled = True
     End Sub
 
     Private Sub Game_Stop()

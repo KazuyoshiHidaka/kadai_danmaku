@@ -40,6 +40,7 @@ Partial Class GamePage
         Panel_Game_Over = New Panel()
         Label5 = New Label()
         Label3 = New Label()
+        Timer_Game_Over = New Timer(components)
         CType(Player, ComponentModel.ISupportInitialize).BeginInit()
         Panel_Info.SuspendLayout()
         Panel_Player_HP.SuspendLayout()
@@ -231,6 +232,10 @@ Partial Class GamePage
         Label3.TabIndex = 0
         Label3.Text = "Game Over"
         ' 
+        ' Timer_Game_Over
+        ' 
+        Timer_Game_Over.Interval = 13
+        ' 
         ' GamePage
         ' 
         AutoScaleDimensions = New SizeF(10F, 25F)
@@ -273,4 +278,5 @@ Partial Class GamePage
     Friend WithEvents Label3 As Label
     Friend WithEvents Label5 As Label
     Friend WithEvents ProgressBar_Stage_Time As ProgressBar
+    Friend WithEvents Timer_Game_Over As Timer
 End Class
