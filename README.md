@@ -44,7 +44,7 @@ VBの中でアニメーションを実装するための便利な機能を見つ
 <img src="https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/6cac3e31-2282-431d-b0a6-7a99e5ee85ea"
    width="150">
 
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L166-L183
+https://github.com/KazuyoshiHidaka/yokero/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L166-L183
 
 <br> 
 
@@ -54,7 +54,7 @@ https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f951
 <img src="https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/ac894c9d-2a61-4354-a4f5-a6cd1e71c8ff"
    width="150">
    
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L277-L299
+https://github.com/KazuyoshiHidaka/yokero/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L277-L299
 
 
 <br><br>
@@ -68,7 +68,7 @@ https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f951
 <br>
 
 例1）ステージの抽象クラス
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L5-L26
+https://github.com/KazuyoshiHidaka/yokero/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L5-L26
 
 <br>
 
@@ -79,4 +79,4 @@ https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f951
 <br>
 
 例3）メインループの中では、ステージごとの分岐をすることなくステージ固有の処理を実行しています。
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L134-L137
+https://github.com/KazuyoshiHidaka/yokero/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L134-L137
