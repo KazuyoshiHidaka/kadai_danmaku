@@ -2,7 +2,7 @@
 
 ## アニメーション
    
-VBの中でアニメーションを実装する便利な機能が見つけられませんでした。
+VBの中でアニメーションを実装するための便利な機能を見つけることができませんでした。
 そのため、アニメーションを実現するために、
 アニメーション用の描画ループを立ち上げ、一定時間ごとの画面の遷移を実現しました。
 
@@ -13,12 +13,19 @@ VBの中でアニメーションを実装する便利な機能が見つけられ
 アニメーションの開始フレーム時間、終了フレーム時間を管理することで、
 メインループの中でアニメーションを実現しました。
 
-無敵状態のアニメーションと終了処理
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L166
+<br>
 
-ゲームオーバーのアニメーション
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L277
+例1）無敵状態のアニメーションと終了処理
+https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L166-L183
 
+<br> 
+
+例2）ゲームオーバーのアニメーション. 
+※別の理由からメインループから切り離していますが、アニメーションにこだわって作りました
+https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L277-L299
+
+
+<br><br>
 
 ## Stageの抽象化
 敵の種類, ステータス, 出現頻度 などステージによって異なる部分を
@@ -26,12 +33,18 @@ https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f951
 一箇所にまとめました。
 このことにより、ステージの追加/変更が容易になりました。
 
-ステージの抽象クラス
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L5
+<br>
 
-各ステージクラス内で、固有の敵の出現パターンを定義している様子
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L150
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L471
+例1）ステージの抽象クラス
+https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L5-L26
 
-メインループの中では、ステージごとの分岐をすることなくステージ固有の処理を実行しています。
-https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L137
+<br>
+
+例2）各ステージクラス内で、固有の敵の出現パターンを定義している様子
+[https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L150](https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L150)
+[https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L471](https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Stage.vb#L471)
+
+<br>
+
+例3）メインループの中では、ステージごとの分岐をすることなくステージ固有の処理を実行しています。
+https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L134-L137
