@@ -3,21 +3,21 @@
 
 # プレイ動画
 
-[プレイ動画.webm](https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/429eecd5-7a53-4bc8-a233-a680ea34f8a4)
+[kadai_danmakuプレイ動画.webm](https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/f09b51ce-b6b8-4f2a-8627-388c6cccc686)
 
 #### おまけ
 
 <details>
 <summary>ステージ1の中玉に当たると</summary>
 
-[プレイ動画.webm](https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/4df02b55-547e-4ee7-9587-b75f9dce6b9f)
+https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/75bceca3-20ae-42a7-a164-6c37345310a2
 
 </details>
 
 <details>
 <summary>ステージ1の最後の特大玉に当たると</summary>
 
-[プレイ動画.webm](https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/bcd9e4ff-2403-4425-949a-a956583956e2)
+https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/c1ed6e68-2260-4b47-8250-53c053f08020
 
 </details>
 
@@ -41,7 +41,7 @@ VBの中でアニメーションを実装するための便利な機能を見つ
 
 例1）無敵状態のアニメーションと終了処理 
 
-<img src="https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/be9ffc54-3cda-4d98-9c25-09068b429812"
+<img src="https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/6cac3e31-2282-431d-b0a6-7a99e5ee85ea"
    width="150">
 
 https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L166-L183
@@ -51,7 +51,7 @@ https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f951
 例2）ゲームオーバーのアニメーション. 
 ※別の理由からメインループから切り離していますが、アニメーションにこだわって作りました
 
-<img src="https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/3f4f19cf-2516-4031-b5e9-4ef6e126c4e1"
+<img src="https://github.com/KazuyoshiHidaka/kadai_danmaku/assets/49894531/ac894c9d-2a61-4354-a4f5-a6cd1e71c8ff"
    width="150">
    
 https://github.com/KazuyoshiHidaka/kadai_danmaku/blob/fb1672b1cf4083d46ee1a6f9518bfe8e7cddb6e0/Game.vb#L277-L299
